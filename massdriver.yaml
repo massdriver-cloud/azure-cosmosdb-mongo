@@ -113,17 +113,7 @@ params:
         enable_backup:
           title: Enable backups for Cosmos DB
           type: boolean
-  allOf:
-  - if:
-      type: object
-      required:
-        - enable_backup
-      properties:
-        enable_backup:
-          enum: 
-            - true
-    then:
-      properties:
+          default: false
         backup_type:
           title: Backup type
           description: The backup type to use for the Cosmos DB account. This cannot be changed after it is set.
@@ -132,17 +122,6 @@ params:
           enum:
             - Continuous
             - Periodic
-      required:
-        - backup_type
-  - if:
-      type: object
-      required:
-        - backup_type
-      properties:
-        backup_type:
-          const: Periodic
-    then:
-      properties:
         interval:
           title: Interval between backups
           description: The interval between backups in minutes. Only required if backup type is 'Periodic'.
@@ -166,10 +145,6 @@ params:
               const: Local
             - title: Zone-redundant backup storage
               const: Zone
-      required:
-        - interval
-        - retention
-        - redundancy
 
 connections:
   required:
@@ -213,7 +188,6 @@ ui:
       - interval
       - retention
       - redundancy
-      - "*"
     interval:
       ui:widget: range
     retention:
