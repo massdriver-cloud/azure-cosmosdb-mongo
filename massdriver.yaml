@@ -1,0 +1,194 @@
+schema: draft-07
+name: "azure-cosmosdb-mongo"
+description: "Azure Cosmos DB is a fully managed, serverless NoSQL database for high-performance applications of any size or scale."
+ref: github.com/massdriver-cloud/azure-cosmosdb-mongo
+access: "private"
+type: "bundle"
+
+params:
+  examples:
+  - __name: Development
+    consistency_level: Eventual
+    redundancy:
+      primary_region:
+        zone_redundant: false
+  - __name: Production
+    consistency_level: Strong
+    redundancy:
+      primary_region:
+        location: East US
+        zone_redundant: true
+      additional_regions:
+        - location: West US
+          zone_redundant: true
+  required:
+    - mongo_server_version
+    - consistency_level
+    - redundancy
+  properties:
+    mongo_server_version:
+      title: MongoDB server version
+      description: The server version of a MongoDB account.
+      type: string
+      default: "4.2"
+      enum:
+        - "4.2"
+        - "4.0"
+        - "3.6"
+        - "3.2"
+    consistency_level:
+      title: Consistency level
+      description: The consistency level to use for this CosmosDB Account.
+      type: string
+      oneOf:
+        - title: Strong (high latency, high consistency)
+          const: Strong
+        - title: Bounded Staleness (medium latency, medium consistency)
+          const: BoundedStaleness
+        - title: Eventual (low latency, low consistency)
+          const: Eventual
+    redundancy:
+      title: Redundancy
+      type: object
+      required:
+        - primary_region
+      properties:
+        automatic_failover:
+          title: Automatic failover
+          description: Whether the Cosmos DB account is in automatic failover mode.
+          type: boolean
+          default: false
+        multi_region_writes:
+          title: Multi-region writes
+          description: Whether the Cosmos DB account is in multi-region writes mode.
+          type: boolean
+          default: false
+        primary_region:
+          title: Primary failover region
+          type: object
+          required:
+            - location
+          properties:
+            location:
+              title: Location
+              description: The Azure region to host replicated data.
+              type: string
+              $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
+            zone_redundant:
+              title: Enable zone redundancy
+              type: boolean
+              default: false
+        additional_regions:
+          title: Additional failover regions
+          type: array
+          default: []
+          items:
+            type: object
+            title: Failover region
+            description: Configuration of a failover region
+            required:
+              - location
+              - failover_priority
+            properties:
+              location:
+                title: Location
+                description: The Azure region to host replicated data.
+                type: string
+                $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
+              failover_priority:
+                title: Failover priority
+                description: The failover priority of the region. The lower the value, the higher the priority is. Minimum value is 1, maximum value is 100.
+                type: integer
+                minimum: 1
+                maximum: 100
+              zone_redundant:
+                title: Enable zone redundancy
+                type: boolean
+                default: false
+    backups:
+      title: Backup & Restore
+      description: Whether the Cosmos DB account is in backup & restore mode.
+      type: object
+      properties:
+        enable_backup:
+          title: Enable backups for Cosmos DB
+          type: boolean
+          default: false
+        backup_type:
+          title: Backup type
+          description: The backup type to use for the Cosmos DB account. This cannot be changed after it is set.
+          $md.immutable: true
+          type: string
+          enum:
+            - Continuous
+            - Periodic
+        interval:
+          title: Interval between backups
+          description: The interval between backups in minutes. Only required if backup type is 'Periodic'.
+          type: integer
+          minimum: 60
+          maximum: 1440
+        retention:
+          title: Retention period for backups
+          description: The number of hours to keep backups. Only required if backup type is 'Periodic'.
+          type: integer
+          minimum: 8
+          maximum: 720
+        redundancy:
+          title: Backup storage redundancy
+          description: The backup storage redundancy to use for the Cosmos DB account. Only required if backup type is 'Periodic'.
+          type: string
+          oneOf:
+            - title: Geo-redundant backup storage
+              const: Geo
+            - title: Local-redundant backup storage
+              const: Local
+            - title: Zone-redundant backup storage
+              const: Zone
+
+connections:
+  required:
+    - azure_service_principal
+    - vnet
+  properties:
+    azure_service_principal:
+      $ref: massdriver/azure-service-principal
+    vnet:
+      $ref: massdriver/azure-virtual-network
+
+artifacts:
+  required: []
+  properties: {}
+
+ui:
+  ui:order:
+    - mongo_server_version
+    - consistency_level
+    - redundancy
+    - backups
+  redundancy:
+    ui:order:
+      - primary_region
+      - additional_regions
+      - automatic_failover
+      - multi_region_writes
+    primary_region:
+      ui:order:
+        - location
+        - zone_redundant
+    additional_regions:
+      ui:order:
+        - location
+        - zone_redundant
+        - failover_priority
+  backups:
+    ui:order:
+      - enable_backup
+      - backup_type
+      - interval
+      - retention
+      - redundancy
+    interval:
+      ui:widget: range
+    retention:
+      ui:widget: range
