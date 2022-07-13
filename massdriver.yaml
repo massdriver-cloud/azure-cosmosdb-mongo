@@ -8,45 +8,62 @@ type: "bundle"
 params:
   examples:
   - __name: Development
-    consistency_level: Eventual
-    redundancy:
-      primary_region:
-        zone_redundant: false
+    database:
+      total_throughput_limit: 1000000
+      serverless: true
   - __name: Production
-    consistency_level: Strong
-    redundancy:
-      primary_region:
-        location: East US
-        zone_redundant: true
-      additional_regions:
-        - location: West US
-          zone_redundant: true
+    database:
+      total_throughput_limit: -1
+      serverless: false
+    backups:
+      enable_backup: true
   required:
-    - mongo_server_version
-    - consistency_level
+    - database
     - redundancy
   properties:
-    mongo_server_version:
-      title: MongoDB server version
-      description: The server version of a MongoDB account.
-      type: string
-      default: "4.2"
-      enum:
-        - "4.2"
-        - "4.0"
-        - "3.6"
-        - "3.2"
-    consistency_level:
-      title: Consistency level
-      description: The consistency level to use for this CosmosDB Account.
-      type: string
-      oneOf:
-        - title: Strong (high latency, high consistency)
-          const: Strong
-        - title: Bounded Staleness (medium latency, medium consistency)
-          const: BoundedStaleness
-        - title: Eventual (low latency, low consistency)
-          const: Eventual
+    database:
+      type: object
+      title: Database
+      required:
+        - mongo_server_version
+        - consistency_level
+        - total_throughput_limit
+      properties:
+        mongo_server_version:
+          title: MongoDB server version
+          description: The server version of a MongoDB account.
+          type: string
+          default: "4.2"
+          enum:
+            - "4.2"
+            - "4.0"
+            - "3.6"
+        consistency_level:
+          title: Consistency level
+          description: The consistency level to use for this CosmosDB Account.
+          type: string
+          oneOf:
+            - title: Strong (high latency, lower throughput)
+              const: Strong
+            - title: Bounded Staleness (medium latency, medium consistency)
+              const: BoundedStaleness
+            - title: Eventual (low latency, high throughput)
+              const: Eventual
+        total_throughput_limit:
+          title: Total throughput limit
+          description: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit).
+          type: integer
+          minimum: -1
+          maximum: 10000000000000000
+        serverless:
+          title: Serverless capacity mode. Cannot be changed, and does not support multiple regions.
+          $md.immutable: true
+          type: boolean
+          default: false
+        multi_region_writes:
+          title: Enable multi-region writes. This setting must be disabled before you can set the consistency level to strong.
+          type: boolean
+          default: false
     redundancy:
       title: Redundancy
       type: object
@@ -54,38 +71,47 @@ params:
         - primary_region
       properties:
         automatic_failover:
-          title: Automatic failover
-          description: Whether the Cosmos DB account is in automatic failover mode.
-          type: boolean
-          default: false
-        multi_region_writes:
-          title: Multi-region writes
-          description: Whether the Cosmos DB account is in multi-region writes mode.
+          title: Enable automatic failover
           type: boolean
           default: false
         primary_region:
-          title: Primary failover region
+          title: Primary data region
           type: object
           required:
             - location
           properties:
             location:
               title: Location
-              description: The Azure region to host replicated data.
+              description: The primary Azure region to host data.
+              $md.immutable: true
               type: string
-              $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
+              enum:
+                - title: Central US
+                  const: centralus
+                - title: North Central US
+                  const: northcentralus
+                - title: South Central US
+                  const: southcentralus
+                - title: East US
+                  const: eastus
+                - title: East US 2
+                  const: eastus2
+                - title: West US
+                  const: westus
+                - title: West US 3
+                  const: westus3
             zone_redundant:
               title: Enable zone redundancy
               type: boolean
               default: false
         additional_regions:
-          title: Additional failover regions
+          title: Multi-region data distribution
           type: array
           default: []
           items:
             type: object
-            title: Failover region
-            description: Configuration of a failover region
+            title: Additional region
+            description: Configuration of an additional region
             required:
               - location
               - failover_priority
@@ -124,13 +150,13 @@ params:
             - Periodic
         interval:
           title: Interval between backups
-          description: The interval between backups in minutes. Only required if backup type is 'Periodic'.
+          description: The interval between backups in minutes. Only required if backup type is 'Periodic'. Minimum of 60, maximum of 1440.
           type: integer
           minimum: 60
           maximum: 1440
         retention:
           title: Retention period for backups
-          description: The number of hours to keep backups. Only required if backup type is 'Periodic'.
+          description: The number of hours to keep backups. Only required if backup type is 'Periodic'. Minimum of 8, maximum of 720.
           type: integer
           minimum: 8
           maximum: 720
@@ -162,16 +188,19 @@ artifacts:
 
 ui:
   ui:order:
-    - mongo_server_version
-    - consistency_level
+    - database
     - redundancy
     - backups
+  database:
+    ui:order:
+      - mongo_server_version
+      - consistency_level
+      - multi_region_writes
   redundancy:
     ui:order:
       - primary_region
       - additional_regions
       - automatic_failover
-      - multi_region_writes
     primary_region:
       ui:order:
         - location
@@ -188,7 +217,3 @@ ui:
       - interval
       - retention
       - redundancy
-    interval:
-      ui:widget: range
-    retention:
-      ui:widget: range

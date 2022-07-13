@@ -31,8 +31,8 @@ resource "azurerm_cosmosdb_account" "main" {
   is_virtual_network_filter_enabled = true
 
   enable_automatic_failover       = var.redundancy.automatic_failover
-  enable_multiple_write_locations = var.redundancy.multi_region_writes
-  mongo_server_version            = var.mongo_server_version
+  enable_multiple_write_locations = var.database.multi_region_writes
+  mongo_server_version            = var.database.mongo_server_version
 
   virtual_network_rule {
     id = var.vnet.data.infrastructure.default_subnet_id
@@ -40,6 +40,13 @@ resource "azurerm_cosmosdb_account" "main" {
 
   identity {
     type = "SystemAssigned"
+  }
+
+  dynamic "capabilities" {
+    for_each = var.database.serverless ? toset(["enabled"]) : toset([])
+    content {
+      name = "EnableServerless"
+    }
   }
 
   capabilities {
@@ -58,9 +65,13 @@ resource "azurerm_cosmosdb_account" "main" {
     name = local.capabilities.enable_mongo
   }
 
+  capacity {
+    total_throughput_limit = var.database.total_throughput_limit
+  }
+
   consistency_policy {
     # Mongo only supports strong, bounded staleness, and eventual consistency.
-    consistency_level       = var.consistency_level
+    consistency_level       = var.database.consistency_level
     max_interval_in_seconds = local.consistency_policy.max_interval_in_seconds
     max_staleness_prefix    = local.consistency_policy.max_staleness_prefix
   }
@@ -82,6 +93,7 @@ resource "azurerm_cosmosdb_account" "main" {
     }
   }
 
+  # Need to solve for continuous backup setting
   dynamic "backup" {
     for_each = var.backups.enable_backup ? toset(["enabled"]) : toset([])
     content {
