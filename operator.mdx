@@ -159,13 +159,13 @@ Production:
   * Provisioned throughput offers guaranteed speed and availability, but requires planning and managing of throughput capacity
     * Best for large, high-throughput workloads with high performance requirements
     * Customer can also override provisioned throughput with autoscale throughput via the collection/container setup
+ * Option to enable automatic backups to protect account
 
 #### Security 
 
 * By default Cosmos DB applies encryption at rest automatically
   * A second layer of encryption with CMK is available, but would need additional terraform configuration to support
-* Option to enable automatic backups to protect account
-* Sometimes regenerating new keys may be necessary, is there a way we can support that? If not, we can just set up a guide for how to do that within the Azure portal
+  * Sometimes regenerating new keys may be necessary, is there a way we can support that? If not, we can just set up a guide for how to do that within the Azure portal
 
 #### Monitoring
 
