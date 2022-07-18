@@ -1,3 +1,5 @@
+# WARNING: This file is managed by: https://github.com/massdriver-cloud/bundle-github-repo-manager
+# DO NOT EDIT HERE. It will be over written.
 name: Publish to Massdriver (beta)
 on:
   push:
