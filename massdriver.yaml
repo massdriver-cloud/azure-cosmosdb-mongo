@@ -19,7 +19,7 @@ params:
       enable_backup: true
   required:
     - database
-    - redundancy
+    - geo_redundancy
   properties:
     database:
       type: object
@@ -49,6 +49,20 @@ params:
               const: BoundedStaleness
             - title: Eventual (low latency, high throughput)
               const: Eventual
+        max_interval_in_seconds:
+          title: Max interval in seconds
+          description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Must be greater than 300 when more than one geo location is used.
+          type: integer
+          default: 5
+          minimum: 5
+          maximum: 86400
+        max_staleness_prefix:
+          title: Max staleness prefix
+          description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Must be greater than 100000 when more than one geo location is used.
+          type: integer
+          default: 100
+          minimum: 10
+          maximum: 2147483647
         total_throughput_limit:
           title: Total throughput limit
           description: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit).
@@ -64,54 +78,24 @@ params:
           title: Enable multi-region writes. This setting must be disabled before you can set the consistency level to strong.
           type: boolean
           default: false
-    redundancy:
-      title: Redundancy
+    geo_redundancy:
+      title: Geo-Redundancy
       type: object
       required:
-        - primary_region
+        - paired_region
       properties:
         automatic_failover:
           title: Enable automatic failover
           type: boolean
           default: false
-        primary_region:
-          title: Primary data region
-          type: object
-          required:
-            - location
-          properties:
-            location:
-              title: Location
-              description: The primary Azure region to host data.
-              $md.immutable: true
-              type: string
-              enum:
-                - title: Central US
-                  const: centralus
-                - title: North Central US
-                  const: northcentralus
-                - title: South Central US
-                  const: southcentralus
-                - title: East US
-                  const: eastus
-                - title: East US 2
-                  const: eastus2
-                - title: West US
-                  const: westus
-                - title: West US 3
-                  const: westus3
-            zone_redundant:
-              title: Enable zone redundancy
-              type: boolean
-              default: false
         additional_regions:
-          title: Multi-region data distribution
+          title: Additional failover regions
           type: array
           default: []
           items:
             type: object
-            title: Additional region
-            description: Configuration of an additional region
+            title: Failover region
+            description: Configuration of a failover region region
             required:
               - location
               - failover_priority
@@ -120,32 +104,38 @@ params:
                 title: Location
                 description: The Azure region to host replicated data.
                 type: string
-                $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
+                enum:
+                  - title: North Central US
+                    const: northcentralus
+                  - title: South Central US
+                    const: southcentralus
+                  - title: East US
+                    const: eastus
+                  - title: East US 2
+                    const: eastus2
+                  - title: West US
+                    const: westus
+                  - title: West US 3
+                    const: westus3
               failover_priority:
                 title: Failover priority
-                description: The failover priority of the region. The lower the value, the higher the priority is. Minimum value is 1, maximum value is 100.
+                description: The failover priority of the region. The lower the value, the higher the priority is. Minimum value is 2, maximum value is 100.
                 type: integer
-                minimum: 1
+                minimum: 2
                 maximum: 100
-              zone_redundant:
-                title: Enable zone redundancy
-                type: boolean
-                default: false
     backups:
       title: Backup & Restore
       description: Whether the Cosmos DB account is in backup & restore mode.
       type: object
       properties:
-        enable_backup:
-          title: Enable backups for Cosmos DB
-          type: boolean
-          default: false
         backup_type:
           title: Backup type
           description: The backup type to use for the Cosmos DB account. This cannot be changed after it is set.
           $md.immutable: true
           type: string
+          default: None
           enum:
+            - None
             - Continuous
             - Periodic
         interval:
@@ -169,8 +159,6 @@ params:
               const: Geo
             - title: Local-redundant backup storage
               const: Local
-            - title: Zone-redundant backup storage
-              const: Zone
 
 connections:
   required:
@@ -189,30 +177,27 @@ artifacts:
 ui:
   ui:order:
     - database
-    - redundancy
+    - geo_redundancy
     - backups
   database:
     ui:order:
       - mongo_server_version
       - consistency_level
       - multi_region_writes
-  redundancy:
+  geo_redundancy:
     ui:order:
-      - primary_region
+      - paired_region
       - additional_regions
       - automatic_failover
-    primary_region:
+    paired_region:
       ui:order:
         - location
-        - zone_redundant
     additional_regions:
       ui:order:
         - location
-        - zone_redundant
         - failover_priority
   backups:
     ui:order:
-      - enable_backup
       - backup_type
       - interval
       - retention
