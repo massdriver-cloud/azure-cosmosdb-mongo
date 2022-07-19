@@ -186,12 +186,8 @@ ui:
       - multi_region_writes
   geo_redundancy:
     ui:order:
-      - paired_region
       - additional_regions
       - automatic_failover
-    paired_region:
-      ui:order:
-        - location
     additional_regions:
       ui:order:
         - location
