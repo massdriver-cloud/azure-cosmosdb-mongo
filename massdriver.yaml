@@ -11,12 +11,14 @@ params:
     database:
       total_throughput_limit: 1000000
       serverless: true
+    backups:
+      backup_type: None
   - __name: Production
     database:
       total_throughput_limit: -1
       serverless: false
     backups:
-      enable_backup: true
+      backup_type: Continuous
   required:
     - database
     - geo_redundancy
@@ -74,16 +76,14 @@ params:
           $md.immutable: true
           type: boolean
           default: false
+    geo_redundancy:
+      title: Geo-Redundancy
+      type: object
+      properties:
         multi_region_writes:
           title: Enable multi-region writes. This setting must be disabled before you can set the consistency level to strong.
           type: boolean
           default: false
-    geo_redundancy:
-      title: Geo-Redundancy
-      type: object
-      required:
-        - paired_region
-      properties:
         automatic_failover:
           title: Enable automatic failover
           type: boolean
@@ -183,11 +183,14 @@ ui:
     ui:order:
       - mongo_server_version
       - consistency_level
-      - multi_region_writes
+      - max_interval_in_seconds
+      - max_staleness_prefix
+      - total_throughput_limit
   geo_redundancy:
     ui:order:
-      - additional_regions
+      - multi_region_writes
       - automatic_failover
+      - additional_regions
     additional_regions:
       ui:order:
         - location
