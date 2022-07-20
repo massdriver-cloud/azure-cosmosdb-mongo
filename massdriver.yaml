@@ -179,6 +179,7 @@ ui:
     - database
     - geo_redundancy
     - backups
+    - *
   database:
     ui:order:
       - mongo_server_version
