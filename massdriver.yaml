@@ -9,7 +9,7 @@ params:
   examples:
   - __name: Development
     database:
-      total_throughput_limit: 1000000
+      total_throughput_limit: 100000
       serverless: true
     backups:
       backup_type: None
