@@ -171,8 +171,11 @@ connections:
       $ref: massdriver/azure-virtual-network
 
 artifacts:
-  required: []
-  properties: {}
+  required:
+    - mongo_authentication
+  properties:
+    mongo_authentication:
+      $ref: massdriver/mongo-authentication
 
 ui:
   ui:order:
