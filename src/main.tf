@@ -35,7 +35,7 @@ resource "azurerm_cosmosdb_account" "main" {
   is_virtual_network_filter_enabled = true
 
   enable_automatic_failover       = var.geo_redundancy.automatic_failover
-  enable_multiple_write_locations = var.database.multi_region_writes
+  enable_multiple_write_locations = var.geo_redundancy.multi_region_writes
   mongo_server_version            = var.database.mongo_server_version
 
   virtual_network_rule {
