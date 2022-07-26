@@ -5,6 +5,10 @@ ref: github.com/massdriver-cloud/azure-cosmosdb-mongo
 access: "private"
 type: "bundle"
 
+steps:
+  - path: src
+    provisioner: terraform
+
 params:
   examples:
   - __name: Development
