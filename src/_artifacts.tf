@@ -13,7 +13,7 @@ locals {
 resource "massdriver_artifact" "authentication" {
   field                = "mongo_authentication"
   provider_resource_id = azurerm_cosmosdb_account.main.id
-  name                 = "CosmosDB Server ${var.md_metadata.name_prefix} (${azurerm_cosmosdb_account.main.id})"
+  name                 = "CosmosDB Mongo Server ${var.md_metadata.name_prefix} (${azurerm_cosmosdb_account.main.id})"
   artifact = jsonencode(
     {
       data = {
