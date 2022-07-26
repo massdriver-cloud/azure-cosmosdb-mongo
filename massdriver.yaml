@@ -191,6 +191,7 @@ ui:
       - max_staleness_prefix
       - total_throughput_limit
       - serverless
+      - "*"
   geo_redundancy:
     ui:order:
       - multi_region_writes
