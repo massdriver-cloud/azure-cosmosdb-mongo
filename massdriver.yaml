@@ -34,6 +34,7 @@ params:
         - mongo_server_version
         - consistency_level
         - total_throughput_limit
+        - cidr
       properties:
         mongo_server_version:
           title: MongoDB server version
