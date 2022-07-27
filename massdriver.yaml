@@ -58,25 +58,25 @@ params:
           description: The consistency level to use for this CosmosDB Account.
           type: string
           oneOf:
-            - title: Strong (high latency, lower throughput)
+            - title: Strong (highest consistency, highest latency, lower throughput)
               const: Strong
-            - title: Bounded Staleness (medium latency, medium consistency)
+            - title: Bounded Staleness (consistency, latency, and throughput varies)
               const: BoundedStaleness
-            - title: Eventual (low latency, high throughput)
+            - title: Eventual (lowest consistency, lowest latency, high throughput)
               const: Eventual
         max_interval_in_seconds:
           title: Max interval in seconds
-          description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Must be greater than 300 when more than one geo location is used.
+          description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency.
           type: integer
-          default: 5
-          minimum: 5
+          default: 300
+          minimum: 300
           maximum: 86400
         max_staleness_prefix:
           title: Max staleness prefix
-          description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Must be greater than 100000 when more than one geo location is used.
+          description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency.
           type: integer
-          default: 100
-          minimum: 10
+          default: 100000
+          minimum: 100000
           maximum: 2147483647
         total_throughput_limit:
           title: Total throughput limit
@@ -94,7 +94,7 @@ params:
       type: object
       properties:
         multi_region_writes:
-          title: Enable multi-region writes. This setting must be disabled before you can set the consistency level to strong.
+          title: Enable multi-region writes. This setting is not supported with strong consistency or serverless mode.
           type: boolean
           default: false
         automatic_failover:
@@ -117,7 +117,7 @@ params:
                 title: Location
                 description: The Azure region to host replicated data.
                 type: string
-                enum:
+                oneOf:
                   - title: North Central US
                     const: northcentralus
                   - title: South Central US
