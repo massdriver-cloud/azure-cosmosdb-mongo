@@ -39,7 +39,7 @@ resource "azurerm_cosmosdb_account" "main" {
   mongo_server_version            = var.database.mongo_server_version
 
   virtual_network_rule {
-    id = var.vnet.data.infrastructure.default_subnet_id
+    id = azurerm_subnet.main.id
   }
 
   identity {
