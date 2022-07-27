@@ -66,14 +66,14 @@ params:
               const: Eventual
         max_interval_in_seconds:
           title: Max interval in seconds
-          description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency.
+          description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Minimum of 300, max of 86400.
           type: integer
           default: 300
           minimum: 300
           maximum: 86400
         max_staleness_prefix:
           title: Max staleness prefix
-          description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency.
+          description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Minimum of 100000, max of 2147483647.
           type: integer
           default: 100000
           minimum: 100000
