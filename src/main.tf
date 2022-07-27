@@ -84,9 +84,12 @@ resource "azurerm_cosmosdb_account" "main" {
     failover_priority = 0
   }
 
-  geo_location {
+  dynamic "geo_location" {
+    for_each = var.database.serverless ? toset([]) : toset(["enabled"])
+    content {
     location          = local.paired_region_map[azurerm_resource_group.main.location]
     failover_priority = 1
+    }
   }
 
   dynamic "geo_location" {
