@@ -1,6 +1,6 @@
 # azure-cosmosdb-mongo
 
-Azure Cosmos DB is a fully managed, serverless NoSQL database for high-performance applications of any size or scale.
+Azure Cosmos MongoDB is a fully managed, serverless NoSQL database for high-performance applications of any size or scale using the MongoDB API.
 
 ## Development
 
