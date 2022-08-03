@@ -21,6 +21,8 @@ params:
     database:
       total_throughput_limit: -1
       serverless: false
+    geo_redundancy:
+      automatic_failover: true
     backups:
       backup_type: Continuous
   required:
@@ -137,8 +139,8 @@ params:
                 minimum: 2
                 maximum: 100
     backups:
-      title: Backup & Restore
-      description: Whether the Cosmos DB account is in backup & restore mode.
+      title: Backups
+      description: Enable and configure backups for your database. Backup type cannot be changed after provisioning.
       type: object
       properties:
         backup_type:
