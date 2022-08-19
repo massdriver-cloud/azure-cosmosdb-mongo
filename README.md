@@ -1,54 +1,17 @@
-# azure-cosmosdb-mongo
-
 Azure Cosmos MongoDB is a fully managed, serverless NoSQL database for high-performance applications of any size or scale using the MongoDB API.
 
-## Development
+## What Is A Bundle
 
-### Enabling Pre-commit
+Bundles are the basic building blocks of infrastructure, applications, and architectures in Massdriver. They are composed of Terraform modules or Helm charts. Read more [here](https://docs.massdriver.cloud/concepts/bundles).
 
-This repo includes Terraform pre-commit hooks.
+## Developing
 
-[Install precommmit](https://pre-commit.com/index.html#installation) on your system.
+### How To Develop A Bundle
 
-```shell
-git init
-pre-commit install
-```
+To learn how to develop a bundle for Massdriver, check out our [bundle docs](https://docs.massdriver.cloud/bundles/development).
 
-Terraform hooks will now be run on each commit.
+### Contribution guidelines
 
-### GitHub Action for Publishing to Massdriver
-
-A github workflow for publishing has been configured in `.github/workflows/publish.yaml`.
-
-You'll need to set your `MASSDRIVER_API_KEY` in GitHub secrets.
-
-### Configuring a bundle
-
-`massdriver.yaml` TBD - walk through of fields & purpose (params, connections, artifacts)
-
-### Building a bundle
-
-Variables files can be generated for your bundle from your `massdriver.yaml` file by running
-
-```shell
-mass bundle build
-```
-
-Two development `tfvars` files are provided for setting `params` and `connections`:
-
-```shell
-cd src
-terraform init
-terraform plan -var-file=./dev.connections.tfvars.json -var-file=./dev.params.tfvars.json
-```
-
-### Developing a bundle
-
-`md_metadata` - naming convention prefix, tags etc
-
-### Misc
-
-#### Other files
-* `operator.mdx` TBD
-* `schema.stories.json` TBD
+So you're interested in contributing to Massdriver Bundles?  Please refer to Massdriver's overall
+[contribution guidelines](https://docs.massdriver.cloud/bundles/contributing) to find out how you
+can help with existing bundles or open source your own bundle.
