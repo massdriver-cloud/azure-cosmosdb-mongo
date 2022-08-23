@@ -63,13 +63,25 @@ Security and compliance scanning of our bundles is performed using [Bridgecrew](
 
 ### Params
 
+Form input parameters for configuring a bundle for deployment.
+
+<details>
+<summary>View</summary>
+
 <!-- PARAMS:START -->
 
 **Params coming soon**
 
 <!-- PARAMS:END -->
 
+</details>
+
 ### Connections
+
+Connections from other bundles that this bundle depends on.
+
+<details>
+<summary>View</summary>
 
 <!-- CONNECTIONS:START -->
 
@@ -77,7 +89,14 @@ Security and compliance scanning of our bundles is performed using [Bridgecrew](
 
 <!-- CONNECTIONS:END -->
 
+</details>
+
 ### Artifacts
+
+Resources created by this bundle that can be connected to other bundles.
+
+<details>
+<summary>View</summary>
 
 <!-- ARTIFACTS:START -->
 
@@ -85,9 +104,11 @@ Security and compliance scanning of our bundles is performed using [Bridgecrew](
 
 <!-- ARTIFACTS:END -->
 
-<!-- CONTRIBUTING:START -->
+</details>
 
 ## Contributing
+
+<!-- CONTRIBUTING:START -->
 
 ### Bug Reports & Feature Requests
 
