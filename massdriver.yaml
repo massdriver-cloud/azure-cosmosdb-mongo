@@ -5,10 +5,6 @@ ref: github.com/massdriver-cloud/azure-cosmosdb-mongo
 access: "private"
 type: "bundle"
 
-steps:
-  - path: src
-    provisioner: terraform
-
 params:
   examples:
   - __name: Development
@@ -39,8 +35,8 @@ params:
         - cidr
       properties:
         mongo_server_version:
-          title: MongoDB server version
-          description: The server version of a MongoDB account.
+          title: Version
+          description: The server version of the MongoDB account.
           type: string
           default: "4.2"
           enum:
@@ -213,13 +209,16 @@ ui:
       - multi_region_writes
       - automatic_failover
       - additional_regions
+      - "*"
     additional_regions:
       ui:order:
         - location
         - failover_priority
+        - "*"
   backups:
     ui:order:
       - backup_type
       - interval
       - retention
       - redundancy
+      - "*"
