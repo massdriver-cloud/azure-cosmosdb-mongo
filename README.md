@@ -47,8 +47,72 @@ Form input parameters for configuring a bundle for deployment.
 <summary>View</summary>
 
 <!-- PARAMS:START -->
+## Properties
 
-**Params coming soon**
+- **`backups`** *(object)*: Enable and configure backups for your database. Backup type cannot be changed after provisioning.
+  - **`backup_type`** *(string)*: The backup type to use for the Cosmos DB account. This cannot be changed after it is set. Must be one of: `['None', 'Continuous', 'Periodic']`. Default: `None`.
+  - **`interval`** *(integer)*: The interval between backups in minutes. Only required if backup type is 'Periodic'. Minimum of 60, maximum of 1440. Minimum: `60`. Maximum: `1440`.
+  - **`redundancy`** *(string)*: The backup storage redundancy to use for the Cosmos DB account. Only required if backup type is 'Periodic'.
+    - **One of**
+      - Geo-redundant backup storage
+      - Local-redundant backup storage
+  - **`retention`** *(integer)*: The number of hours to keep backups. Only required if backup type is 'Periodic'. Minimum of 8, maximum of 720. Minimum: `8`. Maximum: `720`.
+- **`database`** *(object)*
+  - **`cidr`** *(string)*: Specify a /28 CIDR range within your VNet to create subnet for the Cosmos DB. The subnet CIDR cannot be changed after creation.
+  - **`consistency_level`** *(string)*: The consistency level to use for this CosmosDB Account.
+    - **One of**
+      - Strong (highest consistency, highest latency, lower throughput)
+      - Bounded Staleness (consistency, latency, and throughput varies)
+      - Eventual (lowest consistency, lowest latency, high throughput)
+  - **`max_interval_in_seconds`** *(integer)*: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Minimum of 300, max of 86400. Minimum: `300`. Maximum: `86400`. Default: `300`.
+  - **`max_staleness_prefix`** *(integer)*: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Minimum of 100000, max of 2147483647. Minimum: `100000`. Maximum: `2147483647`. Default: `100000`.
+  - **`mongo_server_version`** *(string)*: The server version of the MongoDB account. Must be one of: `['4.2', '4.0', '3.6']`. Default: `4.2`.
+  - **`serverless`** *(boolean)*: Default: `False`.
+  - **`total_throughput_limit`** *(integer)*: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit). Minimum: `-1`. Maximum: `10000000000000000`.
+- **`geo_redundancy`** *(object)*
+  - **`additional_regions`** *(array)*: Default: `[]`.
+    - **Items** *(object)*: Configuration of a failover region region.
+      - **`failover_priority`** *(integer)*: The failover priority of the region. The lower the value, the higher the priority is. Minimum value is 2, maximum value is 100. Minimum: `2`. Maximum: `100`.
+      - **`location`** *(string)*: The Azure region to host replicated data.
+        - **One of**
+          - North Central US
+          - South Central US
+          - East US
+          - East US 2
+          - West US
+          - West US 3
+  - **`automatic_failover`** *(boolean)*: Default: `False`.
+  - **`multi_region_writes`** *(boolean)*: Default: `False`.
+## Examples
+
+  ```json
+  {
+      "__name": "Development",
+      "backups": {
+          "backup_type": "None"
+      },
+      "database": {
+          "serverless": true,
+          "total_throughput_limit": 100000
+      }
+  }
+  ```
+
+  ```json
+  {
+      "__name": "Production",
+      "backups": {
+          "backup_type": "Continuous"
+      },
+      "database": {
+          "serverless": false,
+          "total_throughput_limit": -1
+      },
+      "geo_redundancy": {
+          "automatic_failover": true
+      }
+  }
+  ```
 
 <!-- PARAMS:END -->
 
@@ -62,9 +126,69 @@ Connections from other bundles that this bundle depends on.
 <summary>View</summary>
 
 <!-- CONNECTIONS:START -->
+## Properties
 
-**Connections coming soon**
+- **`azure_service_principal`** *(object)*: . Cannot contain additional properties.
+  - **`data`** *(object)*
+    - **`client_id`** *(string)*: A valid UUID field.
 
+      Examples:
+      ```json
+      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
+      ```
+
+    - **`client_secret`** *(string)*
+    - **`subscription_id`** *(string)*: A valid UUID field.
+
+      Examples:
+      ```json
+      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
+      ```
+
+    - **`tenant_id`** *(string)*: A valid UUID field.
+
+      Examples:
+      ```json
+      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
+      ```
+
+  - **`specs`** *(object)*
+- **`vnet`** *(object)*: . Cannot contain additional properties.
+  - **`data`** *(object)*
+    - **`infrastructure`** *(object)*
+      - **`cidr`** *(string)*
+
+        Examples:
+        ```json
+        "10.100.0.0/16"
+        ```
+
+        ```json
+        "192.24.12.0/22"
+        ```
+
+      - **`default_subnet_id`** *(string)*: Azure Resource ID.
+
+        Examples:
+        ```json
+        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
+        ```
+
+      - **`id`** *(string)*: Azure Resource ID.
+
+        Examples:
+        ```json
+        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
+        ```
+
+  - **`specs`** *(object)*
+    - **`azure`** *(object)*: .
+      - **`region`** *(string)*: Select the Azure region you'd like to provision your resources in.
+        - **One of**
+          - East US
+          - North Central US
+          - South Central US
+          - West US
 <!-- CONNECTIONS:END -->
 
 </details>
@@ -77,9 +201,31 @@ Resources created by this bundle that can be connected to other bundles.
 <summary>View</summary>
 
 <!-- ARTIFACTS:START -->
+## Properties
 
-**Artifacts coming soon**
+- **`mongo_authentication`** *(object)*: mongo cluster authentication and cloud-specific configuration. Cannot contain additional properties.
+  - **`data`** *(object)*
+    - **`authentication`**: Mongo connection string. Cannot contain additional properties.
+      - **`hostname`** *(string)*
+      - **`password`** *(string)*
+      - **`port`** *(integer)*: Port number. Minimum: `0`. Maximum: `65535`.
+      - **`username`** *(string)*
+    - **`infrastructure`** *(object)*: Mongo cluster infrastructure configuration.
+      - **One of**
+        - Kuberenetes infrastructure config*object*: . Cannot contain additional properties.
+          - **`kubernetes_namespace`** *(string)*
+          - **`kubernetes_service`** *(string)*
+        - Azure Infrastructure Resource ID*object*: Minimal Azure Infrastructure Config. Cannot contain additional properties.
+          - **`ari`** *(string)*: Azure Resource ID.
 
+            Examples:
+            ```json
+            "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
+            ```
+
+  - **`specs`** *(object)*
+    - **`mongo`** *(object)*: Informs downstream bundles of Mongo specific data. Cannot contain additional properties.
+      - **`version`** *(string)*: Currently deployed Mongo version.
 <!-- ARTIFACTS:END -->
 
 </details>
