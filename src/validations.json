@@ -1,0 +1,5 @@
+{
+    "do_not_delete": [
+        "azurerm_cosmosdb_account.main"
+    ]
+}
