@@ -1,13 +1,5 @@
 locals {
-  offer_type = "Standard"
-  kind       = "MongoDB"
-
-  capabilities = {
-    enable_mongo                = "EnableMongo"
-    mongo_version               = "MongoDBv3.4"
-    mongo_enable_doc_level      = "mongoEnableDocLevelTTL"
-    enable_aggregation_pipeline = "EnableAggregationPipeline"
-  }
+  key_vault_name = join("", split("-", var.md_metadata.name_prefix))
 
   paired_region_map = {
     "westus"         = "eastus"
@@ -19,6 +11,23 @@ locals {
   }
 }
 
+resource "azuread_application" "main" {
+  display_name = var.md_metadata.name_prefix
+}
+
+# resource "azuread_service_principal" "main" {
+#   application_id = azuread_application.main.application_id
+# }
+
+# resource "azuread_service_principal_password" "main" {
+#   service_principal_id = azuread_service_principal.main.object_id
+# }
+
+# resource "azuread_directory_role_assignment" "main" {
+#   principal_object_id = azuread_application.main.object_id
+#   role_id =
+# }
+
 resource "azurerm_resource_group" "main" {
   name     = var.md_metadata.name_prefix
   location = var.vnet.specs.azure.region
@@ -26,13 +35,52 @@ resource "azurerm_resource_group" "main" {
   tags = var.md_metadata.default_tags
 }
 
+resource "azurerm_key_vault" "main" {
+  name                       = local.key_vault_name
+  location                   = var.vnet.specs.azure.region
+  resource_group_name        = azurerm_resource_group.main.name
+  tenant_id                  = var.azure_service_principal.data.tenant_id
+  sku_name                   = "standard"
+  soft_delete_retention_days = 7
+  purge_protection_enabled   = true
+
+  access_policy {
+    tenant_id = var.azure_service_principal.data.tenant_id
+    object_id = azuread_application.main.object_id
+
+    key_permissions = [
+      "Get",
+      "WrapKey",
+      "UnwrapKey",
+      "Create"
+    ]
+  }
+
+  tags = var.md_metadata.default_tags
+}
+
+resource "azurerm_key_vault_key" "main" {
+  name         = local.key_vault_name
+  key_vault_id = azurerm_key_vault.main.id
+  key_type     = "RSA"
+  key_size     = 2048
+
+  key_opts = [
+    "unwrapKey",
+    "wrapKey"
+  ]
+}
+
 resource "azurerm_cosmosdb_account" "main" {
-  name                              = var.md_metadata.name_prefix
-  location                          = azurerm_resource_group.main.location
-  resource_group_name               = azurerm_resource_group.main.name
-  offer_type                        = local.offer_type
-  kind                              = local.kind
-  is_virtual_network_filter_enabled = true
+  name                               = var.md_metadata.name_prefix
+  location                           = azurerm_resource_group.main.location
+  resource_group_name                = azurerm_resource_group.main.name
+  offer_type                         = "Standard"
+  kind                               = "MongoDB"
+  is_virtual_network_filter_enabled  = true
+  public_network_access_enabled      = false
+  access_key_metadata_writes_enabled = false
+  key_vault_key_id                   = azurerm_key_vault_key.main.versionless_id
 
   enable_automatic_failover       = var.geo_redundancy.automatic_failover
   enable_multiple_write_locations = var.geo_redundancy.multi_region_writes
@@ -40,10 +88,6 @@ resource "azurerm_cosmosdb_account" "main" {
 
   virtual_network_rule {
     id = azurerm_subnet.main.id
-  }
-
-  identity {
-    type = "SystemAssigned"
   }
 
   dynamic "capabilities" {
@@ -54,19 +98,19 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   capabilities {
-    name = local.capabilities.enable_aggregation_pipeline
+    name = "EnableAggregationPipeline"
   }
 
   capabilities {
-    name = local.capabilities.mongo_enable_doc_level
+    name = "mongoEnableDocLevelTTL"
   }
 
   capabilities {
-    name = local.capabilities.mongo_version
+    name = "MongoDBv3.4"
   }
 
   capabilities {
-    name = local.capabilities.enable_mongo
+    name = "EnableMongo"
   }
 
   capacity {
@@ -87,8 +131,8 @@ resource "azurerm_cosmosdb_account" "main" {
   dynamic "geo_location" {
     for_each = var.database.serverless ? toset([]) : toset(["enabled"])
     content {
-    location          = local.paired_region_map[azurerm_resource_group.main.location]
-    failover_priority = 1
+      location          = local.paired_region_map[azurerm_resource_group.main.location]
+      failover_priority = 1
     }
   }
 
