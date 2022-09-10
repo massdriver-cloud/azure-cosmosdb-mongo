@@ -11,23 +11,6 @@ locals {
   }
 }
 
-resource "azuread_application" "main" {
-  display_name = var.md_metadata.name_prefix
-}
-
-# resource "azuread_service_principal" "main" {
-#   application_id = azuread_application.main.application_id
-# }
-
-# resource "azuread_service_principal_password" "main" {
-#   service_principal_id = azuread_service_principal.main.object_id
-# }
-
-# resource "azuread_directory_role_assignment" "main" {
-#   principal_object_id = azuread_application.main.object_id
-#   role_id =
-# }
-
 resource "azurerm_resource_group" "main" {
   name     = var.md_metadata.name_prefix
   location = var.vnet.specs.azure.region
@@ -43,20 +26,15 @@ resource "azurerm_key_vault" "main" {
   sku_name                   = "standard"
   soft_delete_retention_days = 7
   purge_protection_enabled   = true
-
-  access_policy {
-    tenant_id = var.azure_service_principal.data.tenant_id
-    object_id = azuread_application.main.object_id
-
-    key_permissions = [
-      "Get",
-      "WrapKey",
-      "UnwrapKey",
-      "Create"
-    ]
-  }
+  enable_rbac_authorization  = true
 
   tags = var.md_metadata.default_tags
+}
+
+resource "azurerm_role_assignment" "kv_admin" {
+  scope                = azurerm_key_vault.main.id
+  role_definition_name = "Owner"
+  principal_id         = var.azure_service_principal.data.client_id
 }
 
 resource "azurerm_key_vault_key" "main" {
@@ -85,6 +63,11 @@ resource "azurerm_cosmosdb_account" "main" {
   enable_automatic_failover       = var.geo_redundancy.automatic_failover
   enable_multiple_write_locations = var.geo_redundancy.multi_region_writes
   mongo_server_version            = var.database.mongo_server_version
+
+  default_identity_type = "SystemAssignedIdentity"
+  identity {
+    type = "SystemAssigned"
+  }
 
   virtual_network_rule {
     id = azurerm_subnet.main.id
@@ -162,4 +145,10 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   tags = var.md_metadata.default_tags
+}
+
+resource "azurerm_role_assignment" "main" {
+  scope                = azurerm_key_vault.main.id
+  role_definition_name = "Key Vault Crypto Service Encryption User"
+  principal_id         = azurerm_cosmosdb_account.main.identity.0.principal_id
 }
