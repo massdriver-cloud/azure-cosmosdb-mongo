@@ -18,23 +18,55 @@ resource "azurerm_resource_group" "main" {
   tags = var.md_metadata.default_tags
 }
 
-resource "azurerm_key_vault" "main" {
-  name                       = local.key_vault_name
-  location                   = var.vnet.specs.azure.region
-  resource_group_name        = azurerm_resource_group.main.name
-  tenant_id                  = var.azure_service_principal.data.tenant_id
-  sku_name                   = "standard"
-  soft_delete_retention_days = 7
-  purge_protection_enabled   = true
-  enable_rbac_authorization  = true
-
-  tags = var.md_metadata.default_tags
+data "azuread_service_principal" "main" {
+  application_id = var.azure_service_principal.data.client_id
 }
 
-resource "azurerm_role_assignment" "kv_admin" {
-  scope                = azurerm_key_vault.main.id
-  role_definition_name = "Owner"
-  principal_id         = var.azure_service_principal.data.client_id
+resource "azurerm_key_vault" "main" {
+  name                            = local.key_vault_name
+  location                        = var.vnet.specs.azure.region
+  resource_group_name             = azurerm_resource_group.main.name
+  tenant_id                       = var.azure_service_principal.data.tenant_id
+  sku_name                        = "standard"
+  soft_delete_retention_days      = 7
+  purge_protection_enabled        = true
+  enabled_for_template_deployment = true
+
+  access_policy {
+    tenant_id = var.azure_service_principal.data.tenant_id
+    object_id = data.azuread_service_principal.main.object_id
+
+    key_permissions = [
+      "Get",
+      "List",
+      "Create",
+      "Update",
+      "Import",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "Purge",
+      "WrapKey",
+      "UnwrapKey"
+    ]
+  }
+
+  access_policy {
+    tenant_id = var.azure_service_principal.data.tenant_id
+    # This object ID is a static object ID for Azure Cosmos DB: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-setup-cmk#add-access-policy
+    object_id = "a9e12b7f-f218-4b82-8697-7352c51fbb4c"
+
+    key_permissions = [
+      "Get",
+      "List",
+      "Import",
+      "WrapKey",
+      "UnwrapKey"
+    ]
+  }
+
+  tags = var.md_metadata.default_tags
 }
 
 resource "azurerm_key_vault_key" "main" {
@@ -64,7 +96,8 @@ resource "azurerm_cosmosdb_account" "main" {
   enable_multiple_write_locations = var.geo_redundancy.multi_region_writes
   mongo_server_version            = var.database.mongo_server_version
 
-  default_identity_type = "SystemAssignedIdentity"
+  # If we wanted to use RBAC instead of access policies for CMK, we would need to set up a two-step deployment for:
+  # default_identity_type = "SystemAssignedIdentity"
   identity {
     type = "SystemAssigned"
   }
@@ -145,10 +178,4 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   tags = var.md_metadata.default_tags
-}
-
-resource "azurerm_role_assignment" "main" {
-  scope                = azurerm_key_vault.main.id
-  role_definition_name = "Key Vault Crypto Service Encryption User"
-  principal_id         = azurerm_cosmosdb_account.main.identity.0.principal_id
 }
