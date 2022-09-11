@@ -68,10 +68,27 @@ resource "azurerm_cosmosdb_account" "main" {
     total_throughput_limit = var.database.total_throughput_limit
   }
 
-  consistency_policy {
-    consistency_level       = var.database.consistency_level
-    max_interval_in_seconds = var.database.max_interval_in_seconds
-    max_staleness_prefix    = var.database.max_staleness_prefix
+  dynamic "consistency_policy" {
+    for_each = var.database.consistency_level == "BoundedStaleness" ? toset(["BoundedStaleness"]) : toset([])
+    content {
+      consistency_level       = var.database.consistency_level
+      max_interval_in_seconds = var.database.max_interval_in_seconds
+      max_staleness_prefix    = var.database.max_staleness_prefix
+    }
+  }
+
+  dynamic "consistency_policy" {
+    for_each = var.database.consistency_level == "Eventual" ? toset(["Eventual"]) : toset([])
+    content {
+      consistency_level = var.database.consistency_level
+    }
+  }
+
+  dynamic "consitency_policy" {
+    for_each = var.database.consistency_level == "Strong" ? toset(["Strong"]) : toset([])
+    content {
+      consistency_level = var.database.consistency_level
+    }
   }
 
   geo_location {
