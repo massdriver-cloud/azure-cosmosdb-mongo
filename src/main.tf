@@ -84,7 +84,7 @@ resource "azurerm_cosmosdb_account" "main" {
     }
   }
 
-  dynamic "consitency_policy" {
+  dynamic "consistency_policy" {
     for_each = var.database.consistency_level == "Strong" ? toset(["Strong"]) : toset([])
     content {
       consistency_level = var.database.consistency_level
