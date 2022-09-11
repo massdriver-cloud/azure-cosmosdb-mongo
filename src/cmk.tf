@@ -8,7 +8,7 @@ resource "azurerm_key_vault" "main" {
   resource_group_name             = azurerm_resource_group.main.name
   tenant_id                       = var.azure_service_principal.data.tenant_id
   sku_name                        = "standard"
-  soft_delete_retention_days      = 7
+  soft_delete_retention_days      = 90
   purge_protection_enabled        = true
   enabled_for_template_deployment = true
 
