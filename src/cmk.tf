@@ -54,7 +54,7 @@ resource "azurerm_key_vault" "main" {
 resource "azurerm_key_vault_key" "main" {
   name         = azurerm_key_vault.main.name
   key_vault_id = azurerm_key_vault.main.id
-  key_type     = "RSA"
+  key_type     = "RSA-HSM"
   key_size     = 2048
   tags         = var.md_metadata.default_tags
 
