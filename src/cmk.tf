@@ -8,6 +8,7 @@ resource "azurerm_key_vault" "main" {
   resource_group_name             = azurerm_resource_group.main.name
   tenant_id                       = var.azure_service_principal.data.tenant_id
   sku_name                        = "standard"
+  public_network_access_enabled   = false
   soft_delete_retention_days      = 90
   purge_protection_enabled        = true
   enabled_for_template_deployment = true
@@ -16,7 +17,7 @@ resource "azurerm_key_vault" "main" {
     tenant_id = var.azure_service_principal.data.tenant_id
     # This access policy is required to allow the provisioner service principal to create the key vault key and set key permissions for other identities.
     object_id = data.azuread_service_principal.main.object_id
-    
+
     key_permissions = [
       "Get",
       "List",
