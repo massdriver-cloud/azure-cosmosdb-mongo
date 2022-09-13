@@ -56,6 +56,7 @@ resource "azurerm_key_vault_key" "main" {
   key_vault_id = azurerm_key_vault.main.id
   key_type     = "RSA"
   key_size     = 2048
+  tags         = var.md_metadata.default_tags
 
   key_opts = [
     "unwrapKey",
