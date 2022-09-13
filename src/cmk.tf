@@ -7,7 +7,7 @@ resource "azurerm_key_vault" "main" {
   location                        = var.vnet.specs.azure.region
   resource_group_name             = azurerm_resource_group.main.name
   tenant_id                       = var.azure_service_principal.data.tenant_id
-  sku_name                        = "standard"
+  sku_name                        = "premium"
   public_network_access_enabled   = false
   soft_delete_retention_days      = 90
   purge_protection_enabled        = true
