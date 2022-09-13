@@ -51,12 +51,6 @@ Form input parameters for configuring a bundle for deployment.
 
 - **`backups`** *(object)*: Enable and configure backups for your database. Backup type cannot be changed after provisioning.
   - **`backup_type`** *(string)*: The backup type to use for the Cosmos DB account. This cannot be changed after it is set. Must be one of: `['None', 'Continuous', 'Periodic']`. Default: `None`.
-  - **`interval`** *(integer)*: The interval between backups in minutes. Only required if backup type is 'Periodic'. Minimum of 60, maximum of 1440. Minimum: `60`. Maximum: `1440`.
-  - **`redundancy`** *(string)*: The backup storage redundancy to use for the Cosmos DB account. Only required if backup type is 'Periodic'.
-    - **One of**
-      - Geo-redundant backup storage
-      - Local-redundant backup storage
-  - **`retention`** *(integer)*: The number of hours to keep backups. Only required if backup type is 'Periodic'. Minimum of 8, maximum of 720. Minimum: `8`. Maximum: `720`.
 - **`database`** *(object)*
   - **`cidr`** *(string)*: Specify a /28 CIDR range within your VNet to create subnet for the Cosmos DB. The subnet CIDR cannot be changed after creation.
   - **`consistency_level`** *(string)*: The consistency level to use for this CosmosDB Account.
@@ -64,8 +58,6 @@ Form input parameters for configuring a bundle for deployment.
       - Strong (highest consistency, highest latency, lower throughput)
       - Bounded Staleness (consistency, latency, and throughput varies)
       - Eventual (lowest consistency, lowest latency, high throughput)
-  - **`max_interval_in_seconds`** *(integer)*: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Minimum of 300, max of 86400. Minimum: `300`. Maximum: `86400`. Default: `300`.
-  - **`max_staleness_prefix`** *(integer)*: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Minimum of 100000, max of 2147483647. Minimum: `100000`. Maximum: `2147483647`. Default: `100000`.
   - **`mongo_server_version`** *(string)*: The server version of the MongoDB account. Must be one of: `['4.2', '4.0', '3.6']`. Default: `4.2`.
   - **`serverless`** *(boolean)*: Default: `False`.
   - **`total_throughput_limit`** *(integer)*: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit). Minimum: `-1`. Maximum: `10000000000000000`.
