@@ -49,6 +49,9 @@ resource "azurerm_key_vault" "main" {
   }
 
   tags = var.md_metadata.default_tags
+  network_acls {
+    default_action = "Deny"
+  }
 }
 
 resource "azurerm_key_vault_key" "main" {
