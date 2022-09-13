@@ -50,6 +50,7 @@ resource "azurerm_key_vault" "main" {
 
   tags = var.md_metadata.default_tags
   network_acls {
+    bypass         = "AzureServices"
     default_action = "Deny"
   }
 }
@@ -59,7 +60,9 @@ resource "azurerm_key_vault_key" "main" {
   key_vault_id = azurerm_key_vault.main.id
   key_type     = "RSA-HSM"
   key_size     = 2048
-  tags         = var.md_metadata.default_tags
+  # Setting 6 month expiration for the key vault key
+  expiration_date = timeadd(timestamp(), "4380h")
+  tags            = var.md_metadata.default_tags
 
   key_opts = [
     "unwrapKey",
