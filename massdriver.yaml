@@ -62,20 +62,6 @@ params:
               const: BoundedStaleness
             - title: Eventual (lowest consistency, lowest latency, high throughput)
               const: Eventual
-        max_interval_in_seconds:
-          title: Max interval in seconds
-          description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Minimum of 300, max of 86400.
-          type: integer
-          default: 300
-          minimum: 300
-          maximum: 86400
-        max_staleness_prefix:
-          title: Max staleness prefix
-          description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Minimum of 100000, max of 2147483647.
-          type: integer
-          default: 100000
-          minimum: 100000
-          maximum: 2147483647
         total_throughput_limit:
           title: Total throughput limit
           description: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit).
@@ -87,6 +73,34 @@ params:
           $md.immutable: true
           type: boolean
           default: false
+      dependencies:
+        consistency_level:
+          oneOf:
+            - properties:
+                consistency_level:
+                  const: BoundedStaleness
+                max_interval_in_seconds:
+                  title: Max interval in seconds
+                  description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Minimum of 300, max of 86400.
+                  type: integer
+                  default: 300
+                  minimum: 300
+                  maximum: 86400
+                max_staleness_prefix:
+                  title: Max staleness prefix
+                  description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Minimum of 100000, max of 2147483647.
+                  type: integer
+                  default: 100000
+                  minimum: 100000
+                  maximum: 2147483647
+              required:
+                - max_interval_in_seconds
+                - max_staleness_prefix
+            - properties:
+                consistency_level:
+                  enum:
+                    - Strong
+                    - Eventual
     geo_redundancy:
       title: Geo-Redundancy
       type: object
@@ -149,27 +163,42 @@ params:
             - None
             - Continuous
             - Periodic
-        interval:
-          title: Interval between backups
-          description: The interval between backups in minutes. Only required if backup type is 'Periodic'. Minimum of 60, maximum of 1440.
-          type: integer
-          minimum: 60
-          maximum: 1440
-        retention:
-          title: Retention period for backups
-          description: The number of hours to keep backups. Only required if backup type is 'Periodic'. Minimum of 8, maximum of 720.
-          type: integer
-          minimum: 8
-          maximum: 720
-        redundancy:
-          title: Backup storage redundancy
-          description: The backup storage redundancy to use for the Cosmos DB account. Only required if backup type is 'Periodic'.
-          type: string
+      dependencies:
+        backup_type:
           oneOf:
-            - title: Geo-redundant backup storage
-              const: Geo
-            - title: Local-redundant backup storage
-              const: Local
+            - properties:
+                backup_type:
+                  const: Periodic
+                interval:
+                  title: Interval between backups
+                  description: The interval between backups in minutes. Minimum of 60, maximum of 1440.
+                  type: integer
+                  minimum: 60
+                  maximum: 1440
+                retention:
+                  title: Retention period for backups
+                  description: The number of hours to keep backups. Minimum of 8, maximum of 720.
+                  type: integer
+                  minimum: 8
+                  maximum: 720
+                redundancy:
+                  title: Backup storage redundancy
+                  description: The backup storage redundancy to use for the Cosmos DB account.
+                  type: string
+                  oneOf:
+                    - title: Geo-redundant backup storage
+                      const: Geo
+                    - title: Local-redundant backup storage
+                      const: Local
+              required:
+                - interval
+                - retention
+                - redundancy
+            - properties:
+                backup_type:
+                  enum:
+                    - None
+                    - Continuous
 
 connections:
   required:

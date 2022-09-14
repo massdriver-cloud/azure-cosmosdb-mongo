@@ -1,14 +1,4 @@
 locals {
-  offer_type = "Standard"
-  kind       = "MongoDB"
-
-  capabilities = {
-    enable_mongo                = "EnableMongo"
-    mongo_version               = "MongoDBv3.4"
-    mongo_enable_doc_level      = "mongoEnableDocLevelTTL"
-    enable_aggregation_pipeline = "EnableAggregationPipeline"
-  }
-
   paired_region_map = {
     "westus"         = "eastus"
     "eastus"         = "westus"
@@ -27,23 +17,28 @@ resource "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_cosmosdb_account" "main" {
-  name                              = var.md_metadata.name_prefix
-  location                          = azurerm_resource_group.main.location
-  resource_group_name               = azurerm_resource_group.main.name
-  offer_type                        = local.offer_type
-  kind                              = local.kind
-  is_virtual_network_filter_enabled = true
+  name                               = var.md_metadata.name_prefix
+  location                           = azurerm_resource_group.main.location
+  resource_group_name                = azurerm_resource_group.main.name
+  offer_type                         = "Standard"
+  kind                               = "MongoDB"
+  is_virtual_network_filter_enabled  = true
+  public_network_access_enabled      = false
+  access_key_metadata_writes_enabled = false
+  key_vault_key_id                   = azurerm_key_vault_key.main.resource_versionless_id
 
   enable_automatic_failover       = var.geo_redundancy.automatic_failover
   enable_multiple_write_locations = var.geo_redundancy.multi_region_writes
   mongo_server_version            = var.database.mongo_server_version
 
-  virtual_network_rule {
-    id = azurerm_subnet.main.id
-  }
-
+  # If we wanted to use RBAC instead of access policies for CMK, we would need to set up a two-step deployment for:
+  # default_identity_type = "SystemAssignedIdentity"
   identity {
     type = "SystemAssigned"
+  }
+
+  virtual_network_rule {
+    id = azurerm_subnet.main.id
   }
 
   dynamic "capabilities" {
@@ -54,29 +49,46 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   capabilities {
-    name = local.capabilities.enable_aggregation_pipeline
+    name = "EnableAggregationPipeline"
   }
 
   capabilities {
-    name = local.capabilities.mongo_enable_doc_level
+    name = "mongoEnableDocLevelTTL"
   }
 
   capabilities {
-    name = local.capabilities.mongo_version
+    name = "MongoDBv3.4"
   }
 
   capabilities {
-    name = local.capabilities.enable_mongo
+    name = "EnableMongo"
   }
 
   capacity {
     total_throughput_limit = var.database.total_throughput_limit
   }
 
-  consistency_policy {
-    consistency_level       = var.database.consistency_level
-    max_interval_in_seconds = var.database.max_interval_in_seconds
-    max_staleness_prefix    = var.database.max_staleness_prefix
+  dynamic "consistency_policy" {
+    for_each = var.database.consistency_level == "BoundedStaleness" ? toset(["BoundedStaleness"]) : toset([])
+    content {
+      consistency_level       = var.database.consistency_level
+      max_interval_in_seconds = var.database.max_interval_in_seconds
+      max_staleness_prefix    = var.database.max_staleness_prefix
+    }
+  }
+
+  dynamic "consistency_policy" {
+    for_each = var.database.consistency_level == "Eventual" ? toset(["Eventual"]) : toset([])
+    content {
+      consistency_level = var.database.consistency_level
+    }
+  }
+
+  dynamic "consistency_policy" {
+    for_each = var.database.consistency_level == "Strong" ? toset(["Strong"]) : toset([])
+    content {
+      consistency_level = var.database.consistency_level
+    }
   }
 
   geo_location {
@@ -87,8 +99,8 @@ resource "azurerm_cosmosdb_account" "main" {
   dynamic "geo_location" {
     for_each = var.database.serverless ? toset([]) : toset(["enabled"])
     content {
-    location          = local.paired_region_map[azurerm_resource_group.main.location]
-    failover_priority = 1
+      location          = local.paired_region_map[azurerm_resource_group.main.location]
+      failover_priority = 1
     }
   }
 
