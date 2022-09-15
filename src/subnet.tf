@@ -10,15 +10,6 @@ resource "azurerm_subnet" "main" {
   virtual_network_name = local.vnet_name
   address_prefixes     = [var.database.cidr]
   service_endpoints    = ["Microsoft.AzureCosmosDB", "Microsoft.KeyVault"]
-  delegation {
-    name = "delegation"
-    service_delegation {
-      name = "Microsoft.AzureCosmosDB/clusters"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/join/action",
-      ]
-    }
-  }
 }
 
 resource "azurerm_private_endpoint" "main" {
