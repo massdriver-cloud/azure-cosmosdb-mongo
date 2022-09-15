@@ -12,6 +12,13 @@ resource "azurerm_key_vault" "main" {
   soft_delete_retention_days      = 90
   purge_protection_enabled        = true
   enabled_for_template_deployment = true
+  tags                            = var.md_metadata.default_tags
+
+  network_acls {
+    bypass                     = "AzureServices"
+    default_action             = "Deny"
+    virtual_network_subnet_ids = [azurerm_subnet.main.id]
+  }
 
   access_policy {
     tenant_id = var.azure_service_principal.data.tenant_id
@@ -46,12 +53,6 @@ resource "azurerm_key_vault" "main" {
       "WrapKey",
       "UnwrapKey"
     ]
-  }
-
-  tags = var.md_metadata.default_tags
-  network_acls {
-    bypass         = "AzureServices"
-    default_action = "Deny"
   }
 }
 

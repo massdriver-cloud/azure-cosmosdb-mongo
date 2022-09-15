@@ -9,7 +9,7 @@ resource "azurerm_subnet" "main" {
   resource_group_name  = local.vnet_resource_group
   virtual_network_name = local.vnet_name
   address_prefixes     = [var.database.cidr]
-  service_endpoints    = ["Microsoft.AzureCosmosDB"]
+  service_endpoints    = ["Microsoft.AzureCosmosDB", "Microsoft.KeyVault"]
   delegation {
     name = "delegation"
     service_delegation {
@@ -18,5 +18,20 @@ resource "azurerm_subnet" "main" {
         "Microsoft.Network/virtualNetworks/subnets/join/action",
       ]
     }
+  }
+}
+
+resource "azurerm_private_endpoint" "main" {
+  name                = var.md_metadata.name_prefix
+  resource_group_name = azurerm_resource_group.main.name
+  location            = var.vnet.specs.azure.region
+  subnet_id           = azurerm_subnet.main.id
+  tags                = var.md_metadata.default_tags
+
+  private_service_connection {
+    name                           = "key-vault"
+    is_manual_connection           = false
+    private_connection_resource_id = azurerm_key_vault.main.id
+    subresource_names              = ["vault"]
   }
 }
