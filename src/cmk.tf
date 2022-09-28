@@ -1,29 +1,28 @@
-data "azuread_service_principal" "main" {
-  application_id = var.azure_service_principal.data.client_id
+data "azurerm_client_config" "main" {
 }
 
 resource "azurerm_key_vault" "main" {
-  name                            = join("", split("-", var.md_metadata.name_prefix))
-  location                        = var.vnet.specs.azure.region
-  resource_group_name             = azurerm_resource_group.main.name
-  tenant_id                       = var.azure_service_principal.data.tenant_id
-  sku_name                        = "premium"
-  public_network_access_enabled   = false
-  soft_delete_retention_days      = 90
-  purge_protection_enabled        = true
-  enabled_for_template_deployment = true
-  tags                            = var.md_metadata.default_tags
+  name                       = join("", split("-", var.md_metadata.name_prefix))
+  location                   = var.vnet.specs.azure.region
+  resource_group_name        = azurerm_resource_group.main.name
+  tenant_id                  = var.azure_service_principal.data.tenant_id
+  sku_name                   = "premium"
+  soft_delete_retention_days = 90
+  purge_protection_enabled   = true
+  tags                       = var.md_metadata.default_tags
 
   network_acls {
-    bypass                     = "AzureServices"
-    default_action             = "Deny"
+    bypass         = "AzureServices"
+    default_action = "Deny"
+    # Needs a public source IP address to be able to create the key vault key
+    ip_rules                   = ["xxx.xxx.xxx.xxx"]
     virtual_network_subnet_ids = [azurerm_subnet.main.id]
   }
 
   access_policy {
     tenant_id = var.azure_service_principal.data.tenant_id
     # This access policy is required to allow the provisioner service principal to create the key vault key and set key permissions for other identities.
-    object_id = data.azuread_service_principal.main.object_id
+    object_id = data.azurerm_client_config.main.object_id
 
     key_permissions = [
       "Get",
@@ -37,7 +36,11 @@ resource "azurerm_key_vault" "main" {
       "Restore",
       "Purge",
       "WrapKey",
-      "UnwrapKey"
+      "UnwrapKey",
+      "Decrypt",
+      "Encrypt",
+      "Sign",
+      "Verify"
     ]
   }
 
@@ -48,8 +51,6 @@ resource "azurerm_key_vault" "main" {
 
     key_permissions = [
       "Get",
-      "List",
-      "Import",
       "WrapKey",
       "UnwrapKey"
     ]

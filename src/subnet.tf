@@ -11,18 +11,3 @@ resource "azurerm_subnet" "main" {
   address_prefixes     = [var.database.cidr]
   service_endpoints    = ["Microsoft.AzureCosmosDB", "Microsoft.KeyVault"]
 }
-
-resource "azurerm_private_endpoint" "main" {
-  name                = var.md_metadata.name_prefix
-  resource_group_name = azurerm_resource_group.main.name
-  location            = var.vnet.specs.azure.region
-  subnet_id           = azurerm_subnet.main.id
-  tags                = var.md_metadata.default_tags
-
-  private_service_connection {
-    name                           = "key-vault"
-    is_manual_connection           = false
-    private_connection_resource_id = azurerm_key_vault.main.id
-    subresource_names              = ["vault"]
-  }
-}
