@@ -24,7 +24,6 @@ resource "azurerm_cosmosdb_account" "main" {
   enable_automatic_failover             = var.geo_redundancy.automatic_failover
   enable_multiple_write_locations       = var.geo_redundancy.multi_region_writes
   mongo_server_version                  = var.database.mongo_server_version
-  key_vault_key_id                      = azurerm_key_vault_key.main.versionless_id
   public_network_access_enabled         = false
   is_virtual_network_filter_enabled     = true
   access_key_metadata_writes_enabled    = false

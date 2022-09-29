@@ -9,5 +9,5 @@ resource "azurerm_subnet" "main" {
   resource_group_name  = local.vnet_resource_group
   virtual_network_name = local.vnet_name
   address_prefixes     = [var.database.cidr]
-  service_endpoints    = ["Microsoft.AzureCosmosDB", "Microsoft.KeyVault"]
+  service_endpoints    = ["Microsoft.AzureCosmosDB"]
 }
