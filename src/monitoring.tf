@@ -1,15 +1,28 @@
 locals {
-  scope_config = {
-    severity    = "1"
-    frequency   = "PT1M"
-    window_size = "PT5M"
+  automated_alarms = {
+    normalized_ru_consumption_metric_alert = {
+      severity    = "1"
+      frequency   = "PT1M"
+      window_size = "PT5M"
+      operator    = "GreaterThan"
+      aggregation = "Average"
+      threshold   = 90
+    }
+    server_latency_metric_alert = {
+      severity    = "1"
+      frequency   = "PT1M"
+      window_size = "PT5M"
+      operator    = "GreaterThan"
+      aggregation = "Average"
+      threshold   = 500
+    }
   }
-  metric_config = {
-    operator              = "GreaterThan"
-    aggregation           = "Average"
-    threshold_consumption = 90
-    threshold_latency     = 100
+  alarms_map = {
+    "AUTOMATED" = local.automated_alarms
+    "DISABLED"  = {}
+    "CUSTOM"    = lookup(var.monitoring, "alarms", {})
   }
+  alarms = lookup(local.alarms_map, var.monitoring.mode, {})
 }
 
 module "alarm_channel" {
@@ -23,9 +36,9 @@ module "normalized_ru_consumption_metric_alert" {
   scopes                  = [azurerm_cosmosdb_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
-  severity                = local.scope_config.severity
-  frequency               = local.scope_config.frequency
-  window_size             = local.scope_config.window_size
+  severity                = local.alarms.normalized_ru_consumption_metric_alert.severity
+  frequency               = local.alarms.normalized_ru_consumption_metric_alert.frequency
+  window_size             = local.alarms.normalized_ru_consumption_metric_alert.window_size
 
   depends_on = [
     azurerm_cosmosdb_account.main
@@ -36,11 +49,11 @@ module "normalized_ru_consumption_metric_alert" {
   message      = "High RU Usage"
 
   alarm_name       = "${var.md_metadata.name_prefix}-highRUUsage"
-  operator         = local.metric_config.operator
+  operator         = local.alarms.normalized_ru_consumption_metric_alert.operator
   metric_name      = "NormalizedRUConsumption"
   metric_namespace = "Microsoft.documentdb/databaseaccounts"
-  aggregation      = local.metric_config.aggregation
-  threshold        = local.metric_config.threshold_consumption
+  aggregation      = local.alarms.normalized_ru_consumption_metric_alert.aggregation
+  threshold        = local.alarms.normalized_ru_consumption_metric_alert.threshold
 }
 
 module "server_latency_metric_alert" {
@@ -48,9 +61,9 @@ module "server_latency_metric_alert" {
   scopes                  = [azurerm_cosmosdb_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
-  severity                = local.scope_config.severity
-  frequency               = local.scope_config.frequency
-  window_size             = local.scope_config.window_size
+  severity                = local.alarms.server_latency_metric_alert.severity
+  frequency               = local.alarms.server_latency_metric_alert.frequency
+  window_size             = local.alarms.server_latency_metric_alert.window_size
 
   depends_on = [
     azurerm_cosmosdb_account.main
@@ -61,9 +74,9 @@ module "server_latency_metric_alert" {
   message      = "High Server Latency"
 
   alarm_name       = "${var.md_metadata.name_prefix}-highServerLatency"
-  operator         = local.metric_config.operator
+  operator         = local.alarms.server_latency_metric_alert.operator
   metric_name      = "ServerSideLatency"
   metric_namespace = "Microsoft.documentdb/databaseaccounts"
-  aggregation      = local.metric_config.aggregation
-  threshold        = local.metric_config.threshold_latency
+  aggregation      = local.alarms.server_latency_metric_alert.aggregation
+  threshold        = local.alarms.server_latency_metric_alert.threshold
 }

@@ -5,6 +5,104 @@ source_url: github.com/massdriver-cloud/azure-cosmosdb-mongo
 access: "private"
 type: "bundle"
 
+MonitorAlarmMetric: &monitor_alarm_metric
+  required:
+    - severity
+    - frequency
+    - window_size
+    - aggregation
+    - operator
+    - threshold
+  properties:
+    severity:
+      title: Severity
+      description: The severity of the alarm.
+      type: integer
+      default: 1
+      oneOf:
+        - title: Critical
+          const: 0
+        - title: Error
+          const: 1
+        - title: Warning
+          const: 2
+        - title: Information
+          const: 3
+        - title: Verbose
+          const: 4
+    frequency:
+      title: Frequency
+      description: The evaluation frequency of the alarms.
+      type: string
+      default: PT1M
+      oneOf:
+        - title: Every 1 minute
+          const: PT1M
+        - title: Every 5 minutes
+          const: PT5M
+        - title: Every 15 minutes
+          const: PT15M
+        - title: Every 30 minutes
+          const: PT30M
+        - title: Every 1 hour
+          const: PT1H
+    window_size:
+      title: Alarm window
+      description: The time range over which the alarm is evaluated.
+      type: string
+      default: PT5M
+      oneOf:
+        - title: Every 1 minute
+          const: PT1M
+        - title: Every 5 minutes
+          const: PT5M
+        - title: Every 15 minutes
+          const: PT15M
+        - title: Every 30 minutes
+          const: PT30M
+        - title: Every 1 hour
+          const: PT1H
+        - title: Every 6 hours
+          const: PT6H
+        - title: Every 12 hours
+          const: PT12H
+        - title: Every 24 hours
+          const: PT1D
+    aggregation:
+      title: Aggregation
+      description: The aggregation type of the alarm.
+      type: string
+      default: Average
+      enum:
+        - Average
+        - Count
+        - Minimum
+        - Maximum
+        - Total
+    operator:
+      title: Operator
+      description: The operator used to compare the metric value to the threshold.
+      type: string
+      default: GreaterThanOrEqual
+      oneOf:
+        - title: Greater than or equal to
+          const: GreaterThanOrEqual
+        - title: Greater than
+          const: GreaterThan
+        - title: Less than or equal to
+          const: LessThanOrEqual
+        - title: Less than
+          const: LessThan
+        - title: Equals
+          const: Equals
+        - title: Not equal to
+          const: NotEquals
+    threshold:
+      title: Threshold
+      description: The percentage threshold for the metric to trigger an alarm. For RU consumption, the threshold is the percentage of the current RU consumption. For server latency, the threshold is latency in milliseconds.
+      type: integer
+      minimum: 0
+
 params:
   examples:
   - __name: Development
@@ -24,6 +122,8 @@ params:
   required:
     - database
     - geo_redundancy
+    - backups
+    - monitoring
   properties:
     database:
       type: object
@@ -199,6 +299,46 @@ params:
                   enum:
                     - None
                     - Continuous
+    monitoring:
+      type: object
+      title: Monitoring
+      properties:
+        mode:
+          title: Alarm Mode
+          description: Enable and customize Function App metric alarms.
+          type: string
+          default: AUTOMATED
+          oneOf:
+            - const: AUTOMATED
+              title: Automated
+            - const: CUSTOM
+              title: Custom
+            - const: DISABLED
+              title: Disabled
+      dependencies:
+        mode:
+          oneOf:
+            - properties:
+                mode:
+                  const: AUTOMATED
+            - properties:
+                mode:
+                  const: DISABLED
+            - properties:
+                mode:
+                  const: CUSTOM
+                alarms:
+                  type: object
+                  title: Alarms
+                  properties:
+                    normalized_ru_consumption_metric_alert:
+                      title: RU Consumption
+                      type: object
+                      <<: *monitor_alarm_metric
+                    server_latency_metric_alert:
+                      title: Server latency
+                      type: object
+                      <<: *monitor_alarm_metric
 
 connections:
   required:
@@ -222,6 +362,7 @@ ui:
     - database
     - geo_redundancy
     - backups
+    - monitoring
     - "*"
   database:
     ui:order:
@@ -251,3 +392,31 @@ ui:
       - retention
       - redundancy
       - "*"
+  monitoring:
+    ui:order:
+      - mode
+      - alarms
+      - '*'
+    alarms:
+      ui:order:
+        - normalized_ru_consumption_metric_alert
+        - server_latency_metric_alert
+        - '*'
+      normalized_ru_consumption_metric_alert:
+        ui:order:
+          - severity
+          - operator
+          - aggregation
+          - frequency
+          - window_size
+          - threshold
+          - '*'
+      server_latency_metric_alert:
+        ui:order:
+          - severity
+          - operator
+          - aggregation
+          - frequency
+          - window_size
+          - threshold
+          - '*'

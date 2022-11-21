@@ -82,6 +82,12 @@ Form input parameters for configuring a bundle for deployment.
           - West US 3
   - **`automatic_failover`** *(boolean)*: Default: `False`.
   - **`multi_region_writes`** *(boolean)*: Default: `False`.
+- **`monitoring`** *(object)*
+  - **`mode`** *(string)*: Enable and customize Function App metric alarms. Default: `AUTOMATED`.
+    - **One of**
+      - Automated
+      - Custom
+      - Disabled
 ## Examples
 
   ```json
