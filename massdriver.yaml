@@ -402,7 +402,7 @@ ui:
         - normalized_ru_consumption_metric_alert
         - server_latency_metric_alert
         - '*'
-      normalized_ru_consumption_metric_alert:
+      normalized_ru_consumption_metric_alert: &monitor_alarm_metric_ui
         ui:order:
           - severity
           - operator
@@ -412,11 +412,4 @@ ui:
           - threshold
           - '*'
       server_latency_metric_alert:
-        ui:order:
-          - severity
-          - operator
-          - aggregation
-          - frequency
-          - window_size
-          - threshold
-          - '*'
+        <<: *monitor_alarm_metric_ui
