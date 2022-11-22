@@ -158,7 +158,7 @@ Connections from other bundles that this bundle depends on.
       ```
 
   - **`specs`** *(object)*
-- **`vnet`** *(object)*: . Cannot contain additional properties.
+- **`azure_virtual_network`** *(object)*: . Cannot contain additional properties.
   - **`data`** *(object)*
     - **`infrastructure`** *(object)*
       - **`cidr`** *(string)*

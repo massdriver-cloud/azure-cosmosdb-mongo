@@ -343,11 +343,11 @@ params:
 connections:
   required:
     - azure_service_principal
-    - vnet
+    - azure_virtual_network
   properties:
     azure_service_principal:
       $ref: massdriver/azure-service-principal
-    vnet:
+    azure_virtual_network:
       $ref: massdriver/azure-virtual-network
 
 artifacts:
