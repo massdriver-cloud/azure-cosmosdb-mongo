@@ -11,7 +11,7 @@ locals {
 
 resource "azurerm_resource_group" "main" {
   name     = var.md_metadata.name_prefix
-  location = var.vnet.specs.azure.region
+  location = var.azure_virtual_network.specs.azure.region
   tags     = var.md_metadata.default_tags
 }
 

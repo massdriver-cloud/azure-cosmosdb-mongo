@@ -1,5 +1,5 @@
 locals {
-  split_vnet_id       = split("/", var.vnet.data.infrastructure.id)
+  split_vnet_id       = split("/", var.azure_virtual_network.data.infrastructure.id)
   vnet_name           = element(local.split_vnet_id, length(local.split_vnet_id) - 1)
   vnet_resource_group = element(local.split_vnet_id, index(local.split_vnet_id, "resourceGroups") + 1)
 }

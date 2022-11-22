@@ -82,6 +82,12 @@ Form input parameters for configuring a bundle for deployment.
           - West US 3
   - **`automatic_failover`** *(boolean)*: Default: `False`.
   - **`multi_region_writes`** *(boolean)*: Default: `False`.
+- **`monitoring`** *(object)*
+  - **`mode`** *(string)*: Enable and customize Function App metric alarms. Default: `AUTOMATED`.
+    - **One of**
+      - Automated
+      - Custom
+      - Disabled
 ## Examples
 
   ```json
@@ -152,7 +158,7 @@ Connections from other bundles that this bundle depends on.
       ```
 
   - **`specs`** *(object)*
-- **`vnet`** *(object)*: . Cannot contain additional properties.
+- **`azure_virtual_network`** *(object)*: . Cannot contain additional properties.
   - **`data`** *(object)*
     - **`infrastructure`** *(object)*
       - **`cidr`** *(string)*
