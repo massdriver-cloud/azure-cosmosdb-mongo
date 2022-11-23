@@ -59,7 +59,6 @@ Form input parameters for configuring a bundle for deployment.
 - **`backups`** *(object)*: Enable and configure backups for your database. Backup type cannot be changed after provisioning.
   - **`backup_type`** *(string)*: The backup type to use for the Cosmos DB account. This cannot be changed after it is set. Must be one of: `['None', 'Continuous', 'Periodic']`. Default: `None`.
 - **`database`** *(object)*
-  - **`cidr`** *(string)*: Specify a /28 CIDR range within your VNet to create subnet for the Cosmos DB. The subnet CIDR cannot be changed after creation.
   - **`consistency_level`** *(string)*: The consistency level to use for this CosmosDB Account.
     - **One of**
       - Strong (highest consistency, highest latency, lower throughput)
@@ -88,6 +87,8 @@ Form input parameters for configuring a bundle for deployment.
       - Automated
       - Custom
       - Disabled
+- **`network`** *(object)*
+  - **`auto`** *(boolean)*: Enabling this will automatically select an available CIDR range for your database. Unchecking will require you to specify the CIDR. Default: `True`.
 ## Examples
 
   ```json
