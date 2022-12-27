@@ -1,207 +1,53 @@
-# Operator Guide
+# azure-cosmosdb-mongo
+Azure Cosmos DB is a fully managed NoSQL and relational database for modern app development. Azure Cosmos DB offers single-digit millisecond response times, automatic and instant scalability, along with guarantee speed at any scale. Business continuity is assured with SLA-backed availability and enterprise-grade security.
 
-This is the guide for your bundle. It will appear under the `guide` button in Massdriver.
+## Use Cases 
+As a fully managed service, Azure Cosmos DB takes database administration off your hands with automatic management, updates and patching. It also handles capacity management with cost-effective serverless and automatic scaling options that respond to application needs to match capacity with demand.
+### Cloud applications
+Web, mobile, gaming, and IoT application that handle massive amounts of data, reads, and writes at a global scale with near-real response times for various data will benefit from Azure Cosmos DB. Azure Cosmos DB's guaranteed high availability, high throughput, low latency, and tunable consistency are huge advantages when building these types of applications.
+### 99.999% SLA
+Guarantee business continuity, 99.999% availability, and enterprise-level security for every application.
+### Multiple languages with SDKs
+Build apps on API for NoSQL using the languages of your choice with SDKs for .NET, Java, Node.js and Python. Or your choice of drivers for any of the other database APIs.
 
-Use it to describe to users how the bundle works, use cases for the bundle, and event examples.
+## Configuration Presets 
+### Development
+The development preset uses the serverless feature of Azure Cosmos DB. Azure Cosmos DB serverless best fits scenarios where you expect intermittent and unpredictable traffic with long idle times. Because provisioning capacity in such situations isn't required and may be cost-prohibitive, Azure Cosmos DB serverless is recommended for developing, jtesting, prototyping, and running in production new apps where the traffic pattern is unknown.
+### Production
+The production preset uses the provisioned feature of Azure Cosmos DB. When you use provisioned throughput, you set the throughput, measured in request units per second (RU/s) required for your workload. The service provisions the capacity needed to support the throughput requirements. Database operations against the service, such as reads, writes, and queries consume some amount of request units (RUs).
 
-<!--  We may want to polish this for template before releasing --> 
+## Features
+### Auto CIDR
+The Masssdriver Auto CIDR feature takes the burden of selecting a CIDR range away from you by determining the next available CIDR range and automatically provisions it. You still have the option to manually set your CIDR range if you prefer.
 
-## TODO:
+## Design 
+Our bundle includes the following design choices to help simplify your deployment:
+### Adjust performance and scale within seconds
 
-* [ ] Write a design doc / operator guide
-* [ ] Write bundle code
-  * [ ] Defing params & connections JSON schema
-  * [ ] Write 2-3 Guided Configs
-  * [ ] Define artifact schema, design new artifact definitions if necessary
-  * [ ] Test each guided config
-  * [ ] View params schema in storybook, [write UI schema](https://react-jsonschema-form.readthedocs.io/en/latest/usage/widgets/) for sorting fields, etc
-* [ ] Write user guide
-* [ ] Remove this TODO block
+### High availability
 
-This bundle deploys an Azure Resource Group and an Azure Cosmos DB account, specifically using the Mongo DB API. A Cosmos DB account can only use one of the API flavors.
+### Virtual network integration
+We also automatically provision networking resources to make your flexible server available to other resources in your Azure virtual network. The flexible server is given its own exclusive subnet, and your virtual network is given a private DNS zone for your workloads to use.
 
-## Use Cases
+## Best Practices
+The bundle includes a number of best practices without needing any additional work on your part.
+### Dedicated virtual subnet
+We automatically provision a dedicated virtual network subnet with its own private DNS zone for VNet integration.
+### Automated backups
+Azure Cosmos DB automatically takes backups of your data at regular intervals. The automatic backups are taken without affecting the performance or availability of the database operations. All the backups are stored separately in a storage service.
 
-Create a Cosmos DB account with Mongo DB API and use it to create and manage a MongoDB database.
+## Security 
+In order to improve security, we implement a few key safeguards. 
+### Private subnet deployment
+The flexible server will be accessible only from within the private VNet and any peered networks.
+### Data encrypted in transit
+By default, all data in transit will be encrypted with Secure Sockets Layer and Transport Layer Security (SSL/TLS).
+### Data encrypted at rest
+Encryption at rest is now available for documents and backups stored in Azure Cosmos DB in all Azure regions. Encryption at rest is applied automatically for both new and existing customers in these regions. There's no need to configure anything. You get the same great latency, throughput, availability, and functionality as before with the benefit of knowing your data is safe and secure with encryption at rest. Data stored in your Azure Cosmos DB account is automatically and seamlessly encrypted with keys managed by Microsoft using service-managed keys.
 
-Customer use cases may be:
-* IoT and telematics
-* Retail and marketing
-* Gaming applications
-* Web and mobile applications
+## Observability 
+Massdriver provides you with visibility into the health of your systems. By default, flexible servers will be created with alarms connected to Massdriver to alert you when performance drops below a key threshold or fails completely. You will be notified when the memory, CPU, or storage load exceeds 90%.
 
-### Guided Configs
-
-Development:
-* Total throughput limit set to 100000 RU/s
-  * This caps the RU/s to save on cost during Development
-* Set Serverless to true so RU/s used are pay-as-you-use
-
-Production:
-* Total throughput limit set to no limit
-  * This uncaps the RU/s for production workloads, but may result in high costs
-* Set Serverless to false so RU/s are provisioned to use the amount needed by the collection/database
-* Enabled backups to protect production infrastructure
-
-## Resources
-
-* Resource Group
-* Cosmos DB Account
-
-## Configuration
-
-#### Params
-
-* Redundancy
-  * Primary region
-    * Location (should be immutable, can't be changed after creation)<!-- Probably a custom list of regions -->
-      * Tentative list of regions:
-        * Central US
-        * North Central US
-        * South Central US
-        * East US
-        * East US 2
-        * West US (doesn't support zone redundant backups though)
-        * West US 3
-    * Zone redundancy <!-- This will likely be removed -->
-      * I don't think we should support this. For now, supporting this limits us to 2 regions: South Central US and West US 3
-  * Additional regions
-    * Location <!-- Probably a custom list of regions -->
-      * Tentative list of regions:
-        * Central US
-        * North Central US
-        * South Central US
-        * East US
-        * East US 2
-        * West US (doesn't support zone redundant backups though)
-        * West US 3
-    * Failover priority (minimum 1)
-    * Zone redundancy <!-- This will likely be removed -->
-      * I don't think we should support this. For now, supporting this limits us to 2 regions: South Central US and West US 3
-  * Automatic Failover (boolean)
-* Backups
-  * Enabling Backups (boolean)
-  * Backup type
-    * Periodic
-      * Requires sets of params:
-        * Interval in minutes
-          * Minimum 60, maximum 1440
-        * Retention in hours
-          * Minimum 8, maximum 720
-        * Storage redundancy
-          * geo
-          * zone
-            * Not supported in North Centarl US region
-          * local
-    * Continuous (need help w/ terraform for this)
-* Database
-  * Consistency level
-    * Strong
-      * Only available when a single region is used
-      * Cannot use this and multi-region write together
-    * Eventual
-    * Bounded Staleness
-      * Requires parameters like (not sure if these should be exposed to user or hardcoded):
-        * Max interval in seconds
-          * Must be greater than 300 if more than 1 geo location is used
-        * Max staleness in seconds
-          * Must be greater than 100000 if more than 1 geo location is used
-  * Mongo server version <!-- Removed version 3.2 since you can't downgrade to it after upgrading -->
-    * 4.2 (default since it's the newest)
-    * 4.0
-    * 3.6
-  * Enable multi-region writes (boolean)
-    * Cannot be used with strong consistency
-    * Cannot be used with single geo location
-  * Total throughput (RU/s) limit for Cosmos DB Account
-    * Minimum: -1 (no limit)
-    * Maximum: 10000000000000000 (highest numerical value terraform accepts)
-  * Enable Cosmos DB serverless mode (boolean)
-    * Doesn't support multi-region writes
-    * Only supports single region Cosmos DB, no multi-region
-    * Must be immutable
-* Nice to haves:
-  * If/then conditionals in the schema would make the backups section less cluttered
-    * Would also reduce potential errors on provisioning based on region selection
-    * Would allow us to support geo location zone redundancy
-
-#### Connections
-
-* Azure Service Principal
-* Azure Virtual Network
-
-#### Artifacts
-<!-- Potential artifacts -->
-* Database authentication
-  * Username
-  * Password (primary read/write key)
-  * Hostname
-  * Port
-
-* Other potential outputs for the artifact:
-  * Secondary read/write key
-  * Primary read only key
-  * Secondary read only key
-
-## Design
-
-#### Best Practices
-
-* Relaxed consistency options are available for better performance
-* Ability to set max throughput limit (RU/s) to meet the needs of the customer
-  * Can cap RU/s to save on costs
-  * Can set RU/s to unlimited to scale to the needs of the application
-* Support for multi-region data distrubtion (geo-replication)
-* Support for multi-region writes (multi-master)
-* Option to pick Serverless throughput or Provisioned throughput
-  * Serverless throughput is consumption-based and charges for resources used by database operations, no minimum cost
-    * Best for worklods with low traffic, occasional spikes/bursts, and moderate performance requirements
-  * Provisioned throughput offers guaranteed speed and availability, but requires planning and managing of throughput capacity
-    * Best for large, high-throughput workloads with high performance requirements
-    * Customer can also override provisioned throughput with autoscale throughput via the collection/container setup
- * Option to enable automatic backups to protect account
-
-#### Security 
-
-* By default Cosmos DB applies encryption at rest automatically
-  * A second layer of encryption with CMK is available, but would need additional terraform configuration to support
-  * Sometimes regenerating new keys may be necessary, is there a way we can support that? If not, we can just set up a guide for how to do that within the Azure portal
-
-#### Monitoring
-
-* Potential metrics to monitor:
-  * Mongo requests
-    * Number of Mongo requests made
-  * Mongo requests units charged
-    * Mongo RUs consumed
-  * Server side latency
-  * Normalized RU consumption
-    * Max RU consumption percentage per minute
-  * Region onlined
-    * If one of the regions used by the account becomes available
-  * Region offlined
-    * If one of the regions used by the account goes down
-  * Data usage 
-    * Total data usage
-
-### Trade-offs
-
-* Regions not supported in Cosmos DB
-  * East US 3
-* Regions that don't support geo location zone redundancy
-  * North Central US
-  * West Central US
-  * West US
-* Regions that don't support zone redundant Backups
-  * West US
-* Regions in high demand that require a support ticket request for access
-  * Central US
-  * East US
-  * East US 2
-  * West Central US
-  * West US 2
-* Mongo server version 3.2 is not available as a downgrade option, so it's been removed as a param.
-
-### Permissions
-
-Contributor permissions should be all that is necessary to provision the Resource Group and Cosmos DB account.
+## Trade-offs 
+* CMKs are not currently supported
+* Cannot change backup types after deployment
