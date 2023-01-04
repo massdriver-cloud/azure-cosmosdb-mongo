@@ -18,7 +18,7 @@ The API for MongoDB has added benefits of being built on Azure Cosmos DB when co
 
 ## Configuration Presets 
 ### Development
-The development preset uses the serverless feature of Azure Cosmos DB. Azure Cosmos DB serverless best fits scenarios where you expect intermittent and unpredictable traffic with long idle times. Because provisioning capacity in such situations isn't required and may be cost-prohibitive, Azure Cosmos DB serverless is recommended for developing, jtesting, prototyping, and running in production new apps where the traffic pattern is unknown.
+The development preset uses the serverless feature of Azure Cosmos DB. Azure Cosmos DB serverless best fits scenarios where you expect intermittent and unpredictable traffic with long idle times. Because provisioning capacity in such situations isn't required and may be cost-prohibitive, Azure Cosmos DB serverless is recommended for developing, testing, prototyping, and running in production new apps where the traffic pattern is unknown.
 ### Production
 The production preset uses the provisioned feature of Azure Cosmos DB. When you use provisioned throughput, you set the throughput, measured in request units per second (RU/s) required for your workload. The service provisions the capacity needed to support the throughput requirements. Database operations against the service, such as reads, writes, and queries consume some amount of request units (RUs).
 
