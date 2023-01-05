@@ -67,7 +67,7 @@ MonitorAlarmMetric: &monitor_alarm_metric
         - title: Every 12 hours
           const: PT12H
         - title: Every 24 hours
-          const: PT1D
+          const: P1D
     aggregation:
       title: Aggregation
       description: The aggregation type of the alarm.
