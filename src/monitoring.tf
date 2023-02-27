@@ -28,14 +28,14 @@ locals {
 }
 
 module "alarm_channel" {
-  source              = "github.com/massdriver-cloud/terraform-modules//azure-alarm-channel?ref=40d6e54"
+  source              = "github.com/massdriver-cloud/terraform-modules//azure/alarm-channel?ref=343d3e4"
   md_metadata         = var.md_metadata
   resource_group_name = azurerm_resource_group.main.name
 }
 
 module "normalized_ru_consumption_metric_alert" {
   count                   = local.monitoring_enabled
-  source                  = "github.com/massdriver-cloud/terraform-modules//azure-monitor-metrics-alarm?ref=40d6e54"
+  source                  = "github.com/massdriver-cloud/terraform-modules//azure/monitor-metrics-alarm?ref=343d3e4"
   scopes                  = [azurerm_cosmosdb_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
@@ -61,7 +61,7 @@ module "normalized_ru_consumption_metric_alert" {
 
 module "server_latency_metric_alert" {
   count                   = local.monitoring_enabled
-  source                  = "github.com/massdriver-cloud/terraform-modules//azure-monitor-metrics-alarm?ref=40d6e54"
+  source                  = "github.com/massdriver-cloud/terraform-modules//azure/monitor-metrics-alarm?ref=343d3e4"
   scopes                  = [azurerm_cosmosdb_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
