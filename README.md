@@ -59,12 +59,12 @@ Form input parameters for configuring a bundle for deployment.
 - **`backups`** *(object)*: Enable and configure backups for your database. Backup type cannot be changed after provisioning.
   - **`backup_type`** *(string)*: The backup type to use for the Cosmos DB account. This cannot be changed after it is set. Must be one of: `['None', 'Continuous', 'Periodic']`. Default: `None`.
 - **`database`** *(object)*
-  - **`consistency_level`** *(string)*: The consistency level to use for this CosmosDB Account.
+  - **`consistency_level`** *(string)*: The consistency level to use for this CosmosDB Account. [Learn more](https://learn.microsoft.com/en-us/azure/cosmos-db/consistency-levels).
     - **One of**
       - Strong (highest consistency, highest latency, lower throughput)
       - Bounded Staleness (consistency, latency, and throughput varies)
       - Eventual (lowest consistency, lowest latency, high throughput)
-  - **`mongo_server_version`** *(string)*: The server version of the MongoDB account. Must be one of: `['4.2', '4.0', '3.6']`. Default: `4.2`.
+  - **`mongo_server_version`** *(string)*: The server version of the MongoDB account. Must be one of: `['4.2', '4.0', '3.6']`.
   - **`serverless`** *(boolean)*: Default: `False`.
   - **`total_throughput_limit`** *(integer)*: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit). Minimum: `-1`. Maximum: `10000000000000000`.
 - **`geo_redundancy`** *(object)*
@@ -72,13 +72,6 @@ Form input parameters for configuring a bundle for deployment.
     - **Items** *(object)*: Configuration of a failover region region.
       - **`failover_priority`** *(integer)*: The failover priority of the region. The lower the value, the higher the priority is. Minimum value is 2, maximum value is 100. Minimum: `2`. Maximum: `100`.
       - **`location`** *(string)*: The Azure region to host replicated data.
-        - **One of**
-          - North Central US
-          - South Central US
-          - East US
-          - East US 2
-          - West US
-          - West US 3
   - **`automatic_failover`** *(boolean)*: Default: `False`.
   - **`multi_region_writes`** *(boolean)*: Default: `False`.
 - **`monitoring`** *(object)*
@@ -98,6 +91,7 @@ Form input parameters for configuring a bundle for deployment.
           "backup_type": "None"
       },
       "database": {
+          "mongo_server_version": "4.2",
           "serverless": true,
           "total_throughput_limit": 100000
       }
@@ -111,6 +105,7 @@ Form input parameters for configuring a bundle for deployment.
           "backup_type": "Continuous"
       },
       "database": {
+          "mongo_server_version": "4.2",
           "serverless": false,
           "total_throughput_limit": -1
       },
@@ -224,6 +219,9 @@ Resources created by this bundle that can be connected to other bundles.
             "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
             ```
 
+        - MongoDB Atlas Cluster Infrastructure*object*: Minimal MongoDB Atlas cluster infrastructure config. Cannot contain additional properties.
+          - **`cluster_id`** *(string)*
+          - **`project_id`** *(string)*
   - **`specs`** *(object)*
     - **`mongo`** *(object)*: Informs downstream bundles of Mongo specific data. Cannot contain additional properties.
       - **`version`** *(string)*: Currently deployed Mongo version.
