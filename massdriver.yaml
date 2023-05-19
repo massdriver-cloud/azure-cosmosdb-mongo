@@ -107,12 +107,14 @@ params:
   examples:
   - __name: Development
     database:
+      mongo_server_version: "4.2"
       total_throughput_limit: 100000
       serverless: true
     backups:
       backup_type: None
   - __name: Production
     database:
+      mongo_server_version: "4.2"
       total_throughput_limit: -1
       serverless: false
     geo_redundancy:
@@ -138,7 +140,6 @@ params:
           title: Version
           description: The server version of the MongoDB account.
           type: string
-          default: "4.2"
           enum:
             - "4.2"
             - "4.0"
@@ -383,6 +384,8 @@ ui:
       - total_throughput_limit
       - serverless
       - "*"
+    mongo_server_version:
+      ui:field: versioningDropdown
   geo_redundancy:
     ui:order:
       - multi_region_writes
@@ -394,6 +397,9 @@ ui:
         - location
         - failover_priority
         - "*"
+      location:
+        ui:field: supportedCloudLocationsDropdown
+        cloudService: azure
   network:
     ui:order:
       - auto

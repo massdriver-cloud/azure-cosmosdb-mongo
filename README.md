@@ -64,7 +64,7 @@ Form input parameters for configuring a bundle for deployment.
       - Strong (highest consistency, highest latency, lower throughput)
       - Bounded Staleness (consistency, latency, and throughput varies)
       - Eventual (lowest consistency, lowest latency, high throughput)
-  - **`mongo_server_version`** *(string)*: The server version of the MongoDB account. Must be one of: `['4.2', '4.0', '3.6']`. Default: `4.2`.
+  - **`mongo_server_version`** *(string)*: The server version of the MongoDB account. Must be one of: `['4.2', '4.0', '3.6']`.
   - **`serverless`** *(boolean)*: Default: `False`.
   - **`total_throughput_limit`** *(integer)*: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit). Minimum: `-1`. Maximum: `10000000000000000`.
 - **`geo_redundancy`** *(object)*
@@ -91,6 +91,7 @@ Form input parameters for configuring a bundle for deployment.
           "backup_type": "None"
       },
       "database": {
+          "mongo_server_version": "4.2",
           "serverless": true,
           "total_throughput_limit": 100000
       }
@@ -104,6 +105,7 @@ Form input parameters for configuring a bundle for deployment.
           "backup_type": "Continuous"
       },
       "database": {
+          "mongo_server_version": "4.2",
           "serverless": false,
           "total_throughput_limit": -1
       },
