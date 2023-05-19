@@ -393,13 +393,14 @@ ui:
       - additional_regions
       - "*"
     additional_regions:
-      ui:order:
-        - location
-        - failover_priority
-        - "*"
-      location:
-        ui:field: supportedCloudLocationsDropdown
-        cloudService: azure
+      items:
+        ui:order:
+          - location
+          - failover_priority
+          - "*"
+        location:
+          cloudService: azure
+          ui:field: supportedCloudLocationsDropdown
   network:
     ui:order:
       - auto
