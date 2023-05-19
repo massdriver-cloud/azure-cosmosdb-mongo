@@ -145,7 +145,7 @@ params:
             - "3.6"
         consistency_level:
           title: Consistency level
-          description: The consistency level to use for this CosmosDB Account.
+          description: The consistency level to use for this CosmosDB Account. [Learn more](https://learn.microsoft.com/en-us/azure/cosmos-db/consistency-levels).
           type: string
           oneOf:
             - title: Strong (highest consistency, highest latency, lower throughput)
@@ -220,20 +220,7 @@ params:
               location:
                 title: Location
                 description: The Azure region to host replicated data.
-                type: string
-                oneOf:
-                  - title: North Central US
-                    const: northcentralus
-                  - title: South Central US
-                    const: southcentralus
-                  - title: East US
-                    const: eastus
-                  - title: East US 2
-                    const: eastus2
-                  - title: West US
-                    const: westus
-                  - title: West US 3
-                    const: westus3
+                $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
               failover_priority:
                 title: Failover priority
                 description: The failover priority of the region. The lower the value, the higher the priority is. Minimum value is 2, maximum value is 100.
