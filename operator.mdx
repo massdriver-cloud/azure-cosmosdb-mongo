@@ -1,6 +1,12 @@
 # azure-cosmosdb-mongo
 Azure Cosmos DB is a fully managed NoSQL and relational database for modern app development. Azure Cosmos DB offers single-digit millisecond response times, automatic and instant scalability, along with guarantee speed at any scale. Business continuity is assured with SLA-backed availability and enterprise-grade security.
 
+## Cosmos DB Network issue workaround
+There is a known network issue with the Cosmos DB Mongo bundle that refuses network connections with other resources in the same virtual network. Microsoft is aware of the issue and is working on a fix. In the meantime, you can use the following workaround to allow network connections between your Cosmos DB instance and other resources in your virtual network:
+1. [Fork the bundle](https://docs.massdriver.cloud/extend-the-platform/fork-the-bundle) to your own organization.
+2. Update `public_network_access_enabled` on line 44 of `main.tf` to `true`.
+3. Using the Mass CLI, [publish](https://docs.massdriver.cloud/cli/overview#bundles) the bundle to your organization.
+
 ## Use Cases 
 As a fully managed service, Azure Cosmos DB takes database administration off your hands with automatic management, updates and patching. It also handles capacity management with cost-effective serverless and automatic scaling options that respond to application needs to match capacity with demand.
 ### Cloud applications
