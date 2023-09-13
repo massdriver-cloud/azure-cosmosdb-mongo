@@ -2,7 +2,7 @@ schema: draft-07
 name: "azure-cosmosdb-mongo"
 description: "Azure Cosmos MongoDB is a fully managed, serverless NoSQL database for high-performance applications of any size or scale using the MongoDB API."
 source_url: github.com/massdriver-cloud/azure-cosmosdb-mongo
-access: public
+access: private #public
 type: infrastructure
 
 MonitorAlarmMetric: &monitor_alarm_metric
