@@ -223,6 +223,49 @@ Resources created by this bundle that can be connected to other bundles.
           - **`cluster_id`** *(string)*
           - **`project_id`** *(string)*
   - **`specs`** *(object)*
+    - **`aws`** *(object)*: .
+      - **`region`** *(string)*: AWS Region to provision in.
+
+        Examples:
+        ```json
+        "us-west-2"
+        ```
+
+    - **`azure`** *(object)*: .
+      - **`region`** *(string)*: Select the Azure region you'd like to provision your resources in.
+    - **`gcp`** *(object)*: .
+      - **`project`** *(string)*
+      - **`region`** *(string)*: The GCP region to provision resources in.
+
+        Examples:
+        ```json
+        "us-east1"
+        ```
+
+        ```json
+        "us-east4"
+        ```
+
+        ```json
+        "us-west1"
+        ```
+
+        ```json
+        "us-west2"
+        ```
+
+        ```json
+        "us-west3"
+        ```
+
+        ```json
+        "us-west4"
+        ```
+
+        ```json
+        "us-central1"
+        ```
+
     - **`mongo`** *(object)*: Informs downstream bundles of Mongo specific data. Cannot contain additional properties.
       - **`version`** *(string)*: Currently deployed Mongo version.
 <!-- ARTIFACTS:END -->
