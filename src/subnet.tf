@@ -31,6 +31,12 @@ resource "azurerm_subnet" "main" {
   service_endpoints    = ["Microsoft.AzureCosmosDB"]
 }
 
+resource "azurerm_private_dns_zone" "privatelink" {
+  name                = "privatelink.mongo.cosmos.azure.com"
+  resource_group_name = local.vnet_resource_group
+  tags                = var.md_metadata.default_tags
+}
+
 resource "azurerm_private_endpoint" "default" {
   name                = "${var.md_metadata.name_prefix}-pe"
   location            = azurerm_resource_group.main.location
@@ -45,7 +51,16 @@ resource "azurerm_private_endpoint" "default" {
   }
 
   private_dns_zone_group {
-    name                 = "privatelink_mongo_cosmos_azure_com"
-    private_dns_zone_ids = ["/subscriptions/${var.azure_service_principal.data.subscription_id}/resourceGroups/${local.vnet_resource_group}/providers/Microsoft.Network/privateDnsZones/privatelink.mongo.cosmos.azure.com"]
+    name                 = azurerm_private_dns_zone.privatelink.name
+    private_dns_zone_ids = [azurerm_private_dns_zone.privatelink.id]
   }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "default" {
+  name                  = "${var.md_metadata.name_prefix}-vnl"
+  resource_group_name   = local.vnet_resource_group
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink.name
+  virtual_network_id    = data.azurerm_virtual_network.lookup.id
+  registration_enabled  = true
+  tags                  = var.md_metadata.default_tags
 }
