@@ -41,6 +41,7 @@ resource "azurerm_cosmosdb_account" "main" {
   enable_automatic_failover       = var.geo_redundancy.automatic_failover
   enable_multiple_write_locations = var.geo_redundancy.multi_region_writes
   mongo_server_version            = var.database.mongo_server_version
+  # If the network firewall is set to Selected Networks instead of Disabled, it's still set to Disabled on their end but is allowing a single VNet through
   # With public_network_access_enable = true, plus virtual_network_filter_enabled = true, the CosmosDB account will be accessible from the VNet and not the internet.
   public_network_access_enabled         = true
   is_virtual_network_filter_enabled     = true
