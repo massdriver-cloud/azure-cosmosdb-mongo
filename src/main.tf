@@ -45,7 +45,7 @@ resource "azurerm_cosmosdb_account" "main" {
   # With public_network_access_enable = true, plus virtual_network_filter_enabled = true, the CosmosDB account will be accessible from the VNet and not the internet.
   public_network_access_enabled         = true
   is_virtual_network_filter_enabled     = true
-  access_key_metadata_writes_enabled    = false
+  access_key_metadata_writes_enabled    = true
   network_acl_bypass_for_azure_services = true
   tags                                  = var.md_metadata.default_tags
 
