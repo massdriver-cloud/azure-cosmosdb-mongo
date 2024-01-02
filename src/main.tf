@@ -11,7 +11,7 @@ locals {
     "australiaeast"      = "southeastasia"
     "brazilsouth"        = "southcentralus"
     "canadacentral"      = "westus2"
-    "centralindia"       = "southafrianorth"
+    "centralindia"       = "southafricanorth"
     "eastasia"           = "japaneast"
     "francecentral"      = "westeurope"
     "germanywestcentral" = "northeurope"
