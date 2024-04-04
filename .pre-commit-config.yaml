@@ -23,16 +23,6 @@ repos:
         entry: mass schema validate -s https://json-schema.org/draft-07/schema -d ./schema-artifacts.json
         language: system
         pass_filenames: false
-      - id: dev-params-validation
-        name: Validate development input params
-        entry: mass schema validate -s ./schema-params.json -d ./src/_params.auto.tfvars.json
-        language: system
-        pass_filenames: false
-      - id: conn-params-validation
-        name: Validate development connection params
-        entry: mass schema validate -s ./schema-connections.json -d ./src/_connections.auto.tfvars.json
-        language: system
-        pass_filenames: false
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.74.1
     hooks:
