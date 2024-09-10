@@ -17,7 +17,7 @@ Azure Cosmos MongoDB is a fully managed, serverless NoSQL database for high-perf
 
 ## Design
 
-For detailed information, check out our [Operator Guide](operator.mdx) for this bundle.
+For detailed information, check out our [Operator Guide](operator.md) for this bundle.
 
 ## Usage
 
@@ -37,66 +37,8 @@ Form input parameters for configuring a bundle for deployment.
 <summary>View</summary>
 
 <!-- PARAMS:START -->
-## Properties
 
-- **`backups`** *(object)*: Enable and configure backups for your database. Backup type cannot be changed after provisioning.
-  - **`backup_type`** *(string)*: The backup type to use for the Cosmos DB account. This cannot be changed after it is set. Must be one of: `['None', 'Continuous', 'Periodic']`. Default: `None`.
-- **`database`** *(object)*
-  - **`consistency_level`** *(string)*: The consistency level to use for this CosmosDB Account. [Learn more](https://learn.microsoft.com/en-us/azure/cosmos-db/consistency-levels).
-    - **One of**
-      - Strong (highest consistency, highest latency, lower throughput)
-      - Bounded Staleness (consistency, latency, and throughput varies)
-      - Eventual (lowest consistency, lowest latency, high throughput)
-  - **`mongo_server_version`** *(string)*: The server version of the MongoDB account. Must be one of: `['4.2', '4.0', '3.6']`.
-  - **`serverless`** *(boolean)*: Default: `False`.
-  - **`total_throughput_limit`** *(integer)*: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit). Minimum: `-1`. Maximum: `10000000000000000`.
-- **`geo_redundancy`** *(object)*
-  - **`additional_regions`** *(array)*: Default: `[]`.
-    - **Items** *(object)*: Configuration of a failover region region.
-      - **`failover_priority`** *(integer)*: The failover priority of the region. The lower the value, the higher the priority is. Minimum value is 2, maximum value is 100. Minimum: `2`. Maximum: `100`.
-      - **`location`** *(string)*: The Azure region to host replicated data.
-  - **`automatic_failover`** *(boolean)*: Default: `False`.
-  - **`multi_region_writes`** *(boolean)*: Default: `False`.
-- **`monitoring`** *(object)*
-  - **`mode`** *(string)*: Enable and customize Function App metric alarms. Default: `AUTOMATED`.
-    - **One of**
-      - Automated
-      - Custom
-      - Disabled
-- **`network`** *(object)*
-  - **`auto`** *(boolean)*: Enabling this will automatically select an available CIDR range for your database. Unchecking will require you to specify the CIDR. Default: `True`.
-## Examples
-
-  ```json
-  {
-      "__name": "Development",
-      "backups": {
-          "backup_type": "None"
-      },
-      "database": {
-          "mongo_server_version": "4.2",
-          "serverless": true,
-          "total_throughput_limit": 100000
-      }
-  }
-  ```
-
-  ```json
-  {
-      "__name": "Production",
-      "backups": {
-          "backup_type": "Continuous"
-      },
-      "database": {
-          "mongo_server_version": "4.2",
-          "serverless": false,
-          "total_throughput_limit": -1
-      },
-      "geo_redundancy": {
-          "automatic_failover": true
-      }
-  }
-  ```
+**Params coming soon**
 
 <!-- PARAMS:END -->
 
@@ -110,64 +52,9 @@ Connections from other bundles that this bundle depends on.
 <summary>View</summary>
 
 <!-- CONNECTIONS:START -->
-## Properties
 
-- **`azure_service_principal`** *(object)*: . Cannot contain additional properties.
-  - **`data`** *(object)*
-    - **`client_id`** *(string)*: A valid UUID field.
+**Connections coming soon**
 
-      Examples:
-      ```json
-      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
-      ```
-
-    - **`client_secret`** *(string)*
-    - **`subscription_id`** *(string)*: A valid UUID field.
-
-      Examples:
-      ```json
-      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
-      ```
-
-    - **`tenant_id`** *(string)*: A valid UUID field.
-
-      Examples:
-      ```json
-      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
-      ```
-
-  - **`specs`** *(object)*
-- **`azure_virtual_network`** *(object)*: . Cannot contain additional properties.
-  - **`data`** *(object)*
-    - **`infrastructure`** *(object)*
-      - **`cidr`** *(string)*
-
-        Examples:
-        ```json
-        "10.100.0.0/16"
-        ```
-
-        ```json
-        "192.24.12.0/22"
-        ```
-
-      - **`default_subnet_id`** *(string)*: Azure Resource ID.
-
-        Examples:
-        ```json
-        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
-        ```
-
-      - **`id`** *(string)*: Azure Resource ID.
-
-        Examples:
-        ```json
-        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
-        ```
-
-  - **`specs`** *(object)*
-    - **`azure`** *(object)*: .
-      - **`region`** *(string)*: Select the Azure region you'd like to provision your resources in.
 <!-- CONNECTIONS:END -->
 
 </details>
@@ -180,77 +67,9 @@ Resources created by this bundle that can be connected to other bundles.
 <summary>View</summary>
 
 <!-- ARTIFACTS:START -->
-## Properties
 
-- **`mongo_authentication`** *(object)*: mongo cluster authentication and cloud-specific configuration. Cannot contain additional properties.
-  - **`data`** *(object)*
-    - **`authentication`**: Mongo connection string. Cannot contain additional properties.
-      - **`hostname`** *(string)*
-      - **`password`** *(string)*
-      - **`port`** *(integer)*: Port number. Minimum: `0`. Maximum: `65535`.
-      - **`username`** *(string)*
-    - **`infrastructure`** *(object)*: Mongo cluster infrastructure configuration.
-      - **One of**
-        - Kuberenetes infrastructure config*object*: . Cannot contain additional properties.
-          - **`kubernetes_namespace`** *(string)*
-          - **`kubernetes_service`** *(string)*
-        - Azure Infrastructure Resource ID*object*: Minimal Azure Infrastructure Config. Cannot contain additional properties.
-          - **`ari`** *(string)*: Azure Resource ID.
+**Artifacts coming soon**
 
-            Examples:
-            ```json
-            "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
-            ```
-
-        - MongoDB Atlas Cluster Infrastructure*object*: Minimal MongoDB Atlas cluster infrastructure config. Cannot contain additional properties.
-          - **`cluster_id`** *(string)*
-          - **`project_id`** *(string)*
-  - **`specs`** *(object)*
-    - **`aws`** *(object)*: .
-      - **`region`** *(string)*: AWS Region to provision in.
-
-        Examples:
-        ```json
-        "us-west-2"
-        ```
-
-    - **`azure`** *(object)*: .
-      - **`region`** *(string)*: Select the Azure region you'd like to provision your resources in.
-    - **`gcp`** *(object)*: .
-      - **`project`** *(string)*
-      - **`region`** *(string)*: The GCP region to provision resources in.
-
-        Examples:
-        ```json
-        "us-east1"
-        ```
-
-        ```json
-        "us-east4"
-        ```
-
-        ```json
-        "us-west1"
-        ```
-
-        ```json
-        "us-west2"
-        ```
-
-        ```json
-        "us-west3"
-        ```
-
-        ```json
-        "us-west4"
-        ```
-
-        ```json
-        "us-central1"
-        ```
-
-    - **`mongo`** *(object)*: Informs downstream bundles of Mongo specific data. Cannot contain additional properties.
-      - **`version`** *(string)*: Currently deployed Mongo version.
 <!-- ARTIFACTS:END -->
 
 </details>
