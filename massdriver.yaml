@@ -1,120 +1,118 @@
 schema: draft-07
-name: "azure-cosmosdb-mongo"
-description: "Azure Cosmos MongoDB is a fully managed, serverless NoSQL database for high-performance applications of any size or scale using the MongoDB API."
-source_url: github.com/massdriver-cloud/azure-cosmosdb-mongo
-access: public
-type: infrastructure
-
-MonitorAlarmMetric: &monitor_alarm_metric
-  required:
-    - severity
-    - frequency
-    - window_size
-    - aggregation
-    - operator
-    - threshold
-  properties:
+name: azure-cosmosdb-mongo
+version: 1.0.0
+description: Azure Cosmos MongoDB is a fully managed, serverless NoSQL database for high-performance applications of any size or scale using the MongoDB API.
+source_url: https://github.com/massdriver-cloud/azure-cosmosdb-mongo
+type: application
+MonitorAlarmMetric:
+  required: &1
+  - severity
+  - frequency
+  - window_size
+  - aggregation
+  - operator
+  - threshold
+  properties: &2
     severity:
       title: Severity
       description: The severity of the alarm.
       type: integer
       default: 1
       oneOf:
-        - title: Critical
-          const: 0
-        - title: Error
-          const: 1
-        - title: Warning
-          const: 2
-        - title: Information
-          const: 3
-        - title: Verbose
-          const: 4
+      - title: Critical
+        const: 0
+      - title: Error
+        const: 1
+      - title: Warning
+        const: 2
+      - title: Information
+        const: 3
+      - title: Verbose
+        const: 4
     frequency:
       title: Frequency
       description: The evaluation frequency of the alarms.
       type: string
       default: PT1M
       oneOf:
-        - title: Every 1 minute
-          const: PT1M
-        - title: Every 5 minutes
-          const: PT5M
-        - title: Every 15 minutes
-          const: PT15M
-        - title: Every 30 minutes
-          const: PT30M
-        - title: Every 1 hour
-          const: PT1H
+      - title: Every 1 minute
+        const: PT1M
+      - title: Every 5 minutes
+        const: PT5M
+      - title: Every 15 minutes
+        const: PT15M
+      - title: Every 30 minutes
+        const: PT30M
+      - title: Every 1 hour
+        const: PT1H
     window_size:
       title: Alarm window
       description: The time range over which the alarm is evaluated.
       type: string
       default: PT5M
       oneOf:
-        - title: Every 1 minute
-          const: PT1M
-        - title: Every 5 minutes
-          const: PT5M
-        - title: Every 15 minutes
-          const: PT15M
-        - title: Every 30 minutes
-          const: PT30M
-        - title: Every 1 hour
-          const: PT1H
-        - title: Every 6 hours
-          const: PT6H
-        - title: Every 12 hours
-          const: PT12H
-        - title: Every 24 hours
-          const: P1D
+      - title: Every 1 minute
+        const: PT1M
+      - title: Every 5 minutes
+        const: PT5M
+      - title: Every 15 minutes
+        const: PT15M
+      - title: Every 30 minutes
+        const: PT30M
+      - title: Every 1 hour
+        const: PT1H
+      - title: Every 6 hours
+        const: PT6H
+      - title: Every 12 hours
+        const: PT12H
+      - title: Every 24 hours
+        const: P1D
     aggregation:
       title: Aggregation
       description: The aggregation type of the alarm.
       type: string
       default: Average
       enum:
-        - Average
-        - Count
-        - Minimum
-        - Maximum
-        - Total
+      - Average
+      - Count
+      - Minimum
+      - Maximum
+      - Total
     operator:
       title: Operator
       description: The operator used to compare the metric value to the threshold.
       type: string
       default: GreaterThanOrEqual
       oneOf:
-        - title: Greater than or equal to
-          const: GreaterThanOrEqual
-        - title: Greater than
-          const: GreaterThan
-        - title: Less than or equal to
-          const: LessThanOrEqual
-        - title: Less than
-          const: LessThan
-        - title: Equals
-          const: Equals
-        - title: Not equal to
-          const: NotEquals
+      - title: Greater than or equal to
+        const: GreaterThanOrEqual
+      - title: Greater than
+        const: GreaterThan
+      - title: Less than or equal to
+        const: LessThanOrEqual
+      - title: Less than
+        const: LessThan
+      - title: Equals
+        const: Equals
+      - title: Not equal to
+        const: NotEquals
     threshold:
       title: Threshold
       description: The percentage threshold for the metric to trigger an alarm. For RU consumption, the threshold is the percentage of the current RU consumption. For server latency, the threshold is latency in milliseconds.
       type: integer
       minimum: 0
-
 params:
   examples:
   - __name: Development
     database:
-      mongo_server_version: "4.2"
+      mongo_server_version: '4.2'
       total_throughput_limit: 100000
       serverless: true
     backups:
       backup_type: None
   - __name: Production
     database:
-      mongo_server_version: "4.2"
+      mongo_server_version: '4.2'
       total_throughput_limit: -1
       serverless: false
     geo_redundancy:
@@ -122,39 +120,39 @@ params:
     backups:
       backup_type: Continuous
   required:
-    - database
-    - geo_redundancy
-    - network
-    - backups
-    - monitoring
+  - database
+  - geo_redundancy
+  - network
+  - backups
+  - monitoring
   properties:
     database:
       type: object
       title: Database
       required:
-        - mongo_server_version
-        - consistency_level
-        - total_throughput_limit
+      - mongo_server_version
+      - consistency_level
+      - total_throughput_limit
       properties:
         mongo_server_version:
           title: Version
           description: The server version of the MongoDB account.
           type: string
           enum:
-            - "4.2"
-            - "4.0"
-            - "3.6"
+          - '4.2'
+          - '4.0'
+          - '3.6'
         consistency_level:
           title: Consistency level
           description: The consistency level to use for this CosmosDB Account. [Learn more](https://learn.microsoft.com/en-us/azure/cosmos-db/consistency-levels).
           type: string
           oneOf:
-            - title: Strong (highest consistency, highest latency, lower throughput)
-              const: Strong
-            - title: Bounded Staleness (consistency, latency, and throughput varies)
-              const: BoundedStaleness
-            - title: Eventual (lowest consistency, lowest latency, high throughput)
-              const: Eventual
+          - title: Strong (highest consistency, highest latency, lower throughput)
+            const: Strong
+          - title: Bounded Staleness (consistency, latency, and throughput varies)
+            const: BoundedStaleness
+          - title: Eventual (lowest consistency, lowest latency, high throughput)
+            const: Eventual
         total_throughput_limit:
           title: Total throughput limit
           description: The total throughput limit imposed on this Cosmos DB account in RU/s (-1 means no limit).
@@ -163,37 +161,37 @@ params:
           maximum: 10000000000000000
         serverless:
           title: Serverless capacity mode. Cannot be changed, and does not support multiple regions.
-          $md.immutable: true
+          "$md.immutable": true
           type: boolean
           default: false
       dependencies:
         consistency_level:
           oneOf:
-            - properties:
-                consistency_level:
-                  const: BoundedStaleness
-                max_interval_in_seconds:
-                  title: Max interval in seconds
-                  description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Minimum of 300, max of 86400.
-                  type: integer
-                  default: 300
-                  minimum: 300
-                  maximum: 86400
-                max_staleness_prefix:
-                  title: Max staleness prefix
-                  description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Minimum of 100000, max of 2147483647.
-                  type: integer
-                  default: 100000
-                  minimum: 100000
-                  maximum: 2147483647
-              required:
-                - max_interval_in_seconds
-                - max_staleness_prefix
-            - properties:
-                consistency_level:
-                  enum:
-                    - Strong
-                    - Eventual
+          - properties:
+              consistency_level:
+                const: BoundedStaleness
+              max_interval_in_seconds:
+                title: Max interval in seconds
+                description: The amount of staleness tolerated (in seconds). This value is only usable for Bounded Staleness consistency. Minimum of 300, max of 86400.
+                type: integer
+                default: 300
+                minimum: 300
+                maximum: 86400
+              max_staleness_prefix:
+                title: Max staleness prefix
+                description: The number of stale requests tolerated. This value is only usable for Bounded Staleness consistency. Minimum of 100000, max of 2147483647.
+                type: integer
+                default: 100000
+                minimum: 100000
+                maximum: 2147483647
+            required:
+            - max_interval_in_seconds
+            - max_staleness_prefix
+          - properties:
+              consistency_level:
+                enum:
+                - Strong
+                - Eventual
     geo_redundancy:
       title: Geo-Redundancy
       type: object
@@ -215,13 +213,13 @@ params:
             title: Failover region
             description: Configuration of a failover region region
             required:
-              - location
-              - failover_priority
+            - location
+            - failover_priority
             properties:
               location:
                 title: Location
                 description: The Azure region to host replicated data.
-                $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
+                "$ref": https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
               failover_priority:
                 title: Failover priority
                 description: The failover priority of the region. The lower the value, the higher the priority is. Minimum value is 2, maximum value is 100.
@@ -237,7 +235,7 @@ params:
           type: boolean
           description: Enabling this will automatically select an available CIDR range for your database. Unchecking will require you to specify the CIDR.
           default: true
-          $md.immutable: true
+          "$md.immutable": true
       dependencies:
         auto:
           oneOf:
@@ -251,10 +249,10 @@ params:
                 title: Subnet CIDR
                 type: string
                 description: Specify a /28 CIDR range within your vnet to create subnet for the database. The subnet CIDR cannot be changed after creation.
-                $md.immutable: true
-                pattern: ^(?:10\.(?:[0-9]|[0-9]{2}|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|172\.(?:1[6-9]|2[0-9]|3[0-1])|192\.168)(?:\.(?:[0-9]|[0-9]{2}|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){2}\/28$
+                "$md.immutable": true
+                pattern: "^(?:10\\.(?:[0-9]|[0-9]{2}|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|172\\.(?:1[6-9]|2[0-9]|3[0-1])|192\\.168)(?:\\.(?:[0-9]|[0-9]{2}|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){2}\\/28$"
                 message:
-                  pattern: "Must be a /28 range from within the VNet CIDR"
+                  pattern: Must be a /28 range from within the VNet CIDR
             required:
             - cidr
     backups:
@@ -265,49 +263,49 @@ params:
         backup_type:
           title: Backup type
           description: The backup type to use for the Cosmos DB account. This cannot be changed after it is set.
-          $md.immutable: true
+          "$md.immutable": true
           type: string
           default: None
           enum:
-            - None
-            - Continuous
-            - Periodic
+          - None
+          - Continuous
+          - Periodic
       dependencies:
         backup_type:
           oneOf:
-            - properties:
-                backup_type:
-                  const: Periodic
-                interval:
-                  title: Interval between backups
-                  description: The interval between backups in minutes. Minimum of 60, maximum of 1440.
-                  type: integer
-                  minimum: 60
-                  maximum: 1440
-                retention:
-                  title: Retention period for backups
-                  description: The number of hours to keep backups. Minimum of 8, maximum of 720.
-                  type: integer
-                  minimum: 8
-                  maximum: 720
-                redundancy:
-                  title: Backup storage redundancy
-                  description: The backup storage redundancy to use for the Cosmos DB account.
-                  type: string
-                  oneOf:
-                    - title: Geo-redundant backup storage
-                      const: Geo
-                    - title: Local-redundant backup storage
-                      const: Local
-              required:
-                - interval
-                - retention
-                - redundancy
-            - properties:
-                backup_type:
-                  enum:
-                    - None
-                    - Continuous
+          - properties:
+              backup_type:
+                const: Periodic
+              interval:
+                title: Interval between backups
+                description: The interval between backups in minutes. Minimum of 60, maximum of 1440.
+                type: integer
+                minimum: 60
+                maximum: 1440
+              retention:
+                title: Retention period for backups
+                description: The number of hours to keep backups. Minimum of 8, maximum of 720.
+                type: integer
+                minimum: 8
+                maximum: 720
+              redundancy:
+                title: Backup storage redundancy
+                description: The backup storage redundancy to use for the Cosmos DB account.
+                type: string
+                oneOf:
+                - title: Geo-redundant backup storage
+                  const: Geo
+                - title: Local-redundant backup storage
+                  const: Local
+            required:
+            - interval
+            - retention
+            - redundancy
+          - properties:
+              backup_type:
+                enum:
+                - None
+                - Continuous
     monitoring:
       type: object
       title: Monitoring
@@ -318,119 +316,124 @@ params:
           type: string
           default: AUTOMATED
           oneOf:
-            - const: AUTOMATED
-              title: Automated
-            - const: CUSTOM
-              title: Custom
-            - const: DISABLED
-              title: Disabled
+          - const: AUTOMATED
+            title: Automated
+          - const: CUSTOM
+            title: Custom
+          - const: DISABLED
+            title: Disabled
       dependencies:
         mode:
           oneOf:
-            - properties:
-                mode:
-                  const: AUTOMATED
-            - properties:
-                mode:
-                  const: DISABLED
-            - properties:
-                mode:
-                  const: CUSTOM
-                alarms:
-                  type: object
-                  title: Alarms
-                  properties:
-                    normalized_ru_consumption_metric_alert:
-                      title: RU Consumption
-                      type: object
-                      <<: *monitor_alarm_metric
-                    server_latency_metric_alert:
-                      title: Server latency
-                      type: object
-                      <<: *monitor_alarm_metric
-
+          - properties:
+              mode:
+                const: AUTOMATED
+          - properties:
+              mode:
+                const: DISABLED
+          - properties:
+              mode:
+                const: CUSTOM
+              alarms:
+                type: object
+                title: Alarms
+                properties:
+                  normalized_ru_consumption_metric_alert:
+                    title: RU Consumption
+                    type: object
+                    required: *1
+                    properties: *2
+                  server_latency_metric_alert:
+                    title: Server latency
+                    type: object
+                    required: *1
+                    properties: *2
 connections:
   required:
-    - azure_service_principal
-    - azure_virtual_network
+  - azure_service_principal
+  - azure_virtual_network
   properties:
     azure_service_principal:
-      $ref: massdriver/azure-service-principal
+      "$ref": massdriver/azure-service-principal
     azure_virtual_network:
-      $ref: massdriver/azure-virtual-network
-
+      "$ref": massdriver/azure-virtual-network
 artifacts:
   required:
-    - mongo_authentication
+  - mongo_authentication
   properties:
     mongo_authentication:
-      $ref: massdriver/mongo-authentication
-
+      "$ref": massdriver/mongo-authentication
 ui:
   ui:order:
-    - database
-    - geo_redundancy
-    - network
-    - backups
-    - monitoring
-    - "*"
+  - database
+  - geo_redundancy
+  - network
+  - backups
+  - monitoring
+  - "*"
   database:
     ui:order:
-      - mongo_server_version
-      - cidr
-      - consistency_level
-      - max_interval_in_seconds
-      - max_staleness_prefix
-      - total_throughput_limit
-      - serverless
-      - "*"
+    - mongo_server_version
+    - cidr
+    - consistency_level
+    - max_interval_in_seconds
+    - max_staleness_prefix
+    - total_throughput_limit
+    - serverless
+    - "*"
     mongo_server_version:
       ui:field: versioningDropdown
   geo_redundancy:
     ui:order:
-      - multi_region_writes
-      - automatic_failover
-      - additional_regions
-      - "*"
+    - multi_region_writes
+    - automatic_failover
+    - additional_regions
+    - "*"
     additional_regions:
       items:
         ui:order:
-          - location
-          - failover_priority
-          - "*"
+        - location
+        - failover_priority
+        - "*"
         location:
           cloudService: azure
           ui:field: supportedCloudLocationsDropdown
   network:
     ui:order:
-      - auto
-      - cidr
-      - "*"
+    - auto
+    - cidr
+    - "*"
   backups:
     ui:order:
-      - backup_type
-      - interval
-      - retention
-      - redundancy
-      - "*"
+    - backup_type
+    - interval
+    - retention
+    - redundancy
+    - "*"
   monitoring:
     ui:order:
-      - mode
-      - alarms
-      - '*'
+    - mode
+    - alarms
+    - "*"
     alarms:
       ui:order:
-        - normalized_ru_consumption_metric_alert
-        - server_latency_metric_alert
-        - '*'
-      normalized_ru_consumption_metric_alert: &monitor_alarm_metric_ui
-        ui:order:
-          - severity
-          - operator
-          - aggregation
-          - frequency
-          - window_size
-          - threshold
-          - '*'
+      - normalized_ru_consumption_metric_alert
+      - server_latency_metric_alert
+      - "*"
+      normalized_ru_consumption_metric_alert:
+        ui:order: &3
+        - severity
+        - operator
+        - aggregation
+        - frequency
+        - window_size
+        - threshold
+        - "*"
       server_latency_metric_alert:
-        <<: *monitor_alarm_metric_ui
+        ui:order: *3
+steps:
+- path: src
+  provisioner: opentofu
+  config:
+    checkov:
+      enable: true
