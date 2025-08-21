@@ -1,9 +1,0 @@
-{
-  "do_not_delete": [
-    "azurerm_resource_group.main",
-    "azurerm_cosmosdb_account.main",
-    "azurerm_subnet.main",
-    "azurerm_key_vault.main",
-    "azurerm_key_vault_key.main"
-  ]
-}
