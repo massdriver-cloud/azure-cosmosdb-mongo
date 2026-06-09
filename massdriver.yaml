@@ -349,19 +349,19 @@ params:
                     properties: *2
 connections:
   required:
-  - azure_service_principal
+  - azure_authentication
   - azure_virtual_network
   properties:
-    azure_service_principal:
-      "$ref": massdriver/azure-service-principal
+    azure_authentication:
+      "$ref": azure-service-principal
     azure_virtual_network:
-      "$ref": massdriver/azure-virtual-network
+      "$ref": azure-virtual-network
 artifacts:
   required:
   - mongo_authentication
   properties:
     mongo_authentication:
-      "$ref": massdriver/mongo-authentication
+      "$ref": mongo-authentication
 ui:
   ui:order:
   - database
