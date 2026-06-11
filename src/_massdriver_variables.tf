@@ -11,12 +11,10 @@ variable "azure_authentication" {
 }
 variable "azure_virtual_network" {
   type = object({
-    data = object({
-      infrastructure = object({
-        cidr              = string
-        default_subnet_id = string
-        id                = string
-      })
+    infrastructure = object({
+      cidr              = string
+      default_subnet_id = string
+      id                = string
     })
     specs = optional(object({
       azure = optional(object({

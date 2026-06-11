@@ -1,8 +1,8 @@
 locals {
-  data_infrastructure = {
+  infrastructure = {
     ari = azurerm_cosmosdb_account.main.id
   }
-  data_authentication = {
+  authentication = {
     username = "${var.md_metadata.name_prefix}"
     password = azurerm_cosmosdb_account.main.primary_key
     hostname = "${var.md_metadata.name_prefix}.mongo.cosmos.azure.com"
@@ -15,10 +15,8 @@ resource "massdriver_artifact" "authentication" {
   name     = "CosmosDB Mongo Server ${var.md_metadata.name_prefix} (${azurerm_cosmosdb_account.main.id})"
   artifact = jsonencode(
     {
-      data = {
-        infrastructure = local.data_infrastructure
-        authentication = local.data_authentication
-      }
+      infrastructure = local.infrastructure
+      authentication = local.authentication
       specs = {
         mongo = {
           version = azurerm_cosmosdb_account.main.mongo_server_version
